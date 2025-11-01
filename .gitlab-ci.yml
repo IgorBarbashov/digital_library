@@ -79,7 +79,7 @@ pyright:
       fi
   script:
     - export PYTHONPATH=$PWD:$PWD/src
-    - if command -v npx >/dev/null 2>&1; then npx pyright ; else pyright ; fi
+    - poetry run pyright
   artifacts:
     expire_in: 1 week
     paths:
