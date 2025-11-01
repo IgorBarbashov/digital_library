@@ -54,19 +54,19 @@ ruff:
       - .ruffcache/
     when: always
 
-# Typecheck (pyright) — uses Node image; runs in parallel with ruff/pytest
+# Typecheck (pyright) — uses Python image for correct version
 pyright:
   stage: check
-  image: $NODE_IMAGE
+  image: $PYTHON_IMAGE
   before_script:
+    # Install Node.js
+    - apt-get update && apt-get install -y curl
+    - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+    - apt-get install -y nodejs
     - node -v
     - npm -v
-    # Install Python and development tools
-    - apk add --no-cache python3 py3-pip python3-dev gcc musl-dev
-    # Create and activate virtual environment
-    - python3 -m venv .venv
-    - source .venv/bin/activate
-    # Install poetry in the virtual environment
+    # Install poetry and dependencies
+    - pip install --upgrade pip
     - pip install "poetry==${POETRY_VERSION}"
     - poetry config virtualenvs.in-project true
     - poetry install --no-interaction --no-ansi --with dev
