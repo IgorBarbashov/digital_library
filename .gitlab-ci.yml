@@ -1,41 +1,42 @@
-# .gitlab-ci.yml
 stages:
-  - lint
-  - typecheck
-  - test
+  - check
   - deploy
 
 variables:
   PYTHON_IMAGE: "python:3.14-slim"
   NODE_IMAGE: "node:24-alpine"
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  POETRY_INSTALL: "poetry"
   PYTEST_JUNIT_PATH: "junit-report.xml"
   PYTEST_COVERAGE_XML: "coverage.xml"
 
-# Cache poetry virtualenv + caches to speed up jobs
+# share caches to speed installs (no guarantee of cross-job race-free venv writes)
 cache:
-  key: "${CI_JOB_NAME}-${CI_COMMIT_REF_SLUG}"
+  key: "${CI_COMMIT_REF_SLUG}"
   paths:
     - .venv/
     - .cache/pypoetry/
     - .cache/pip
     - node_modules/
 
+# poetry setup anchor
+.default_poetry_setup: &poetry_setup
+  - python -V
+  - pip install --upgrade pip
+  - pip install ${POETRY_INSTALL}
+  - poetry --version
+  - poetry config virtualenvs.in-project true
+  - poetry install --no-interaction --no-ansi --with dev || poetry install --no-interaction --no-ansi
+
 ###############################################################################
-# Lint with ruff (installed and run via poetry)
+# CHECK STAGE: jobs inside this stage run in parallel (if runners are free)
 ###############################################################################
+
+# Lint (ruff via poetry)
 ruff:
-  stage: lint
+  stage: check
   image: $PYTHON_IMAGE
   before_script:
-    - python -V
-    - pip install --upgrade pip
-    - pip install poetry
-    - poetry --version
-    # ensure virtualenv is created inside the project so we can cache .venv
-    - poetry config virtualenvs.in-project true
-    # try to install with dev extras (newer poetry uses groups) then fallback to default
-    - poetry install --no-interaction --no-ansi --with dev || poetry install --no-interaction --no-ansi
+    - *poetry_setup
   script:
     - poetry run ruff check .
   artifacts:
@@ -44,38 +45,34 @@ ruff:
       - .ruffcache/
     when: always
 
-###############################################################################
-# Type-check with pyright (Node job)
-###############################################################################
+# Typecheck (pyright) — uses Node image; runs in parallel with ruff/pytest
 pyright:
-  stage: typecheck
+  stage: check
   image: $NODE_IMAGE
   before_script:
     - node -v
     - npm -v
-    - npm install -g pyright
+    # prefer project-local pyright if package.json exists
+    - |
+      if [ -f "package.json" ]; then
+        npm ci || npm install
+      else
+        npm install -g pyright
+      fi
   script:
-    - pyright
+    - if command -v npx >/dev/null 2>&1; then npx pyright ; else pyright ; fi
   artifacts:
     expire_in: 1 week
     paths:
       - node_modules/
     when: always
 
-###############################################################################
-# Tests with pytest (run via poetry)
-###############################################################################
+# Tests (pytest via poetry)
 pytest:
-  stage: test
+  stage: check
   image: $PYTHON_IMAGE
   before_script:
-    - python -V
-    - pip install --upgrade pip
-    - pip install poetry
-    - poetry --version
-    - poetry config virtualenvs.in-project true
-    - poetry install --no-interaction --no-ansi --with dev || poetry install --no-interaction --no-ansi
-    # ensure package is installed into the poetry-managed venv if needed
+    - *poetry_setup
     - |
       if [ -f "pyproject.toml" ]; then
         poetry run pip install -e . || true
@@ -91,10 +88,9 @@ pytest:
       - ${PYTEST_COVERAGE_XML}
       - .pytest_cache/
     expire_in: 1 week
-  coverage: '/TOTAL.*\s+(\d+%)/'  # tweak regex if your coverage report format differs
 
 ###############################################################################
-# Deploy placeholder — extend for real deployments later
+# deploy placeholder (runs after check stage completes)
 ###############################################################################
 deploy:
   stage: deploy
@@ -102,6 +98,7 @@ deploy:
   when: manual
   allow_failure: true
   script:
-    - echo "Deployment placeholder - add your deployment steps here (docker build/push, kubectl, etc.)."
+    - echo "Deployment placeholder — add your deployment steps here."
   only:
     - main
+
