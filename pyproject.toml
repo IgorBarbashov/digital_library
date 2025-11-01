@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "fastapi-project"
+version = "0.1.0"
+description = "MIPT project"
+authors = [
+  "Kalugin Egor kalugin.ei@phystech.edu",
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.14"
+fastapi = "^0.120.4"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.2"
+pyright = "^1.1.407"
+ruff = "^0.14.3"
+httpx = "^0.28.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
