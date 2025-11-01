@@ -89,7 +89,7 @@ pytest:
   script:
     - poetry run pytest -q --maxfail=1 
       --junitxml=${PYTEST_JUNIT_PATH} 
-      --cov=./ 
+      --cov=src 
       --cov-report=xml:${PYTEST_COVERAGE_XML} 
       --cov-report=term
       --cov-fail-under=80
