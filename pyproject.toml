@@ -3,7 +3,7 @@ name = "fastapi-project"
 version = "0.1.0"
 description = "MIPT project"
 authors = [
-  "Kalugin Egor kalugin.ei@phystech.edu",
+  "Kalugin Egor <kalugin.ei@phystech.edu>",
 ]
 readme = "README.md"
 packages = [{include = "src"}]
