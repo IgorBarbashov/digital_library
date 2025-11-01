@@ -1,0 +1,107 @@
+# .gitlab-ci.yml
+stages:
+  - lint
+  - typecheck
+  - test
+  - deploy
+
+variables:
+  PYTHON_IMAGE: "python:3.14-slim"
+  NODE_IMAGE: "node:24-alpine"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PYTEST_JUNIT_PATH: "junit-report.xml"
+  PYTEST_COVERAGE_XML: "coverage.xml"
+
+# Cache poetry virtualenv + caches to speed up jobs
+cache:
+  key: "${CI_JOB_NAME}-${CI_COMMIT_REF_SLUG}"
+  paths:
+    - .venv/
+    - .cache/pypoetry/
+    - .cache/pip
+    - node_modules/
+
+###############################################################################
+# Lint with ruff (installed and run via poetry)
+###############################################################################
+ruff:
+  stage: lint
+  image: $PYTHON_IMAGE
+  before_script:
+    - python -V
+    - pip install --upgrade pip
+    - pip install poetry
+    - poetry --version
+    # ensure virtualenv is created inside the project so we can cache .venv
+    - poetry config virtualenvs.in-project true
+    # try to install with dev extras (newer poetry uses groups) then fallback to default
+    - poetry install --no-interaction --no-ansi --with dev || poetry install --no-interaction --no-ansi
+  script:
+    - poetry run ruff check .
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - .ruffcache/
+    when: always
+
+###############################################################################
+# Type-check with pyright (Node job)
+###############################################################################
+pyright:
+  stage: typecheck
+  image: $NODE_IMAGE
+  before_script:
+    - node -v
+    - npm -v
+    - npm install -g pyright
+  script:
+    - pyright
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - node_modules/
+    when: always
+
+###############################################################################
+# Tests with pytest (run via poetry)
+###############################################################################
+pytest:
+  stage: test
+  image: $PYTHON_IMAGE
+  before_script:
+    - python -V
+    - pip install --upgrade pip
+    - pip install poetry
+    - poetry --version
+    - poetry config virtualenvs.in-project true
+    - poetry install --no-interaction --no-ansi --with dev || poetry install --no-interaction --no-ansi
+    # ensure package is installed into the poetry-managed venv if needed
+    - |
+      if [ -f "pyproject.toml" ]; then
+        poetry run pip install -e . || true
+      fi
+  script:
+    - poetry run pytest -q --maxfail=1 --junitxml=${PYTEST_JUNIT_PATH} --cov=./ --cov-report=xml:${PYTEST_COVERAGE_XML}
+  artifacts:
+    when: always
+    reports:
+      junit: ${PYTEST_JUNIT_PATH}
+    paths:
+      - ${PYTEST_JUNIT_PATH}
+      - ${PYTEST_COVERAGE_XML}
+      - .pytest_cache/
+    expire_in: 1 week
+  coverage: '/TOTAL.*\s+(\d+%)/'  # tweak regex if your coverage report format differs
+
+###############################################################################
+# Deploy placeholder — extend for real deployments later
+###############################################################################
+deploy:
+  stage: deploy
+  image: $PYTHON_IMAGE
+  when: manual
+  allow_failure: true
+  script:
+    - echo "Deployment placeholder - add your deployment steps here (docker build/push, kubectl, etc.)."
+  only:
+    - main
