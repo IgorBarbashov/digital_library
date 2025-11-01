@@ -61,7 +61,10 @@ pyright:
   before_script:
     - node -v
     - npm -v
-    # prefer project-local pyright if package.json exists
+    - apk add --no-cache python3 py3-pip
+    - pip install "poetry==${POETRY_VERSION}"
+    - poetry config virtualenvs.in-project true
+    - poetry install --no-interaction --no-ansi --with dev
     - |
       if [ -f "package.json" ]; then
         npm ci || npm install
@@ -69,12 +72,19 @@ pyright:
         npm install -g pyright
       fi
   script:
+    - export PYTHONPATH=$PWD:$PWD/src
     - if command -v npx >/dev/null 2>&1; then npx pyright ; else pyright ; fi
   artifacts:
     expire_in: 1 week
     paths:
       - node_modules/
     when: always
+  cache:
+    key: pyright-${CI_COMMIT_REF_SLUG}
+    paths:
+      - .venv/
+      - node_modules/
+    policy: pull-push
 
 # Tests (pytest via poetry)
 pytest:
