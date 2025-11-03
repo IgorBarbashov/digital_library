@@ -1,10 +1,23 @@
 stages:
+  - build
   - check
   - deploy
+# Build Docker image for CI
+build-image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+  script:
+    - docker build --build-arg INSTALL_DEV=true -t fastapi-project:ci .
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - Dockerfile
 
 variables:
-  PYTHON_IMAGE: "python:3.14-slim"
-  NODE_IMAGE: "node:24-alpine"
   POETRY_VERSION: "1.8.3"
   POETRY_INSTALL: "poetry==${POETRY_VERSION}"
   PYTEST_JUNIT_PATH: "junit-report.xml"
@@ -43,9 +56,7 @@ cache:
 # Lint (ruff via poetry)
 ruff:
   stage: check
-  image: $PYTHON_IMAGE
-  before_script:
-    - *poetry_setup
+  image: fastapi-project:ci
   script:
     - poetry run ruff check .
   artifacts:
@@ -54,29 +65,10 @@ ruff:
       - .ruffcache/
     when: always
 
-# Typecheck (pyright) — uses Python image for correct version
+# Typecheck (pyright)
 pyright:
   stage: check
-  image: $PYTHON_IMAGE
-  before_script:
-    # Install Node.js
-    - apt-get update && apt-get install -y curl
-    - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
-    - apt-get install -y nodejs
-    - node -v
-    - npm -v
-    # Install poetry and dependencies
-    - pip install --upgrade pip
-    - pip install "poetry==${POETRY_VERSION}"
-    - poetry config virtualenvs.in-project true
-    - poetry install --no-interaction --no-ansi --with dev
-    # Install pyright
-    - |
-      if [ -f "package.json" ]; then
-        npm ci || npm install
-      else
-        npm install -g pyright
-      fi
+  image: fastapi-project:ci
   script:
     - export PYTHONPATH=$PWD:$PWD/src
     - poetry run pyright
@@ -95,13 +87,7 @@ pyright:
 # Tests (pytest via poetry)
 pytest:
   stage: check
-  image: $PYTHON_IMAGE
-  before_script:
-    - *poetry_setup
-    - |
-      if [ -f "pyproject.toml" ]; then
-        poetry run pip install -e . || true
-      fi
+  image: fastapi-project:ci
   script:
     - poetry run pytest -q --maxfail=1 
       --junitxml=${PYTEST_JUNIT_PATH} 
@@ -128,7 +114,7 @@ pytest:
 ###############################################################################
 deploy:
   stage: deploy
-  image: $PYTHON_IMAGE
+  image: fastapi-project:ci
   when: manual
   allow_failure: true
   script:

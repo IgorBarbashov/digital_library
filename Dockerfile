@@ -23,8 +23,14 @@ RUN python -m pip install --upgrade pip \
     && python -m pip install "poetry==${POETRY_VERSION}" --no-cache-dir \
     && poetry config virtualenvs.create false --local
 
-# export and install dependencies using poetry (no dev packages)
-RUN poetry install --no-interaction --no-ansi --no-dev
+
+# export and install dependencies using poetry
+ARG INSTALL_DEV=false
+RUN if [ "$INSTALL_DEV" = "true" ]; then \
+            poetry install --no-interaction --no-ansi --with dev; \
+        else \
+            poetry install --no-interaction --no-ansi --no-dev; \
+        fi
 
 # copy application code
 COPY . /app
