@@ -55,6 +55,10 @@ cache:
 
 # Lint (ruff via poetry)
 ruff:
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
   stage: check
   image: fastapi-project:ci
   script:
@@ -67,6 +71,10 @@ ruff:
 
 # Typecheck (pyright)
 pyright:
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
   stage: check
   image: fastapi-project:ci
   script:
@@ -86,6 +94,10 @@ pyright:
 
 # Tests (pytest via poetry)
 pytest:
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
   stage: check
   image: fastapi-project:ci
   script:
@@ -113,6 +125,10 @@ pytest:
 # DEPLOY STAGE: Deployment to various environments
 ###############################################################################
 deploy:
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
   stage: deploy
   image: fastapi-project:ci
   when: manual
