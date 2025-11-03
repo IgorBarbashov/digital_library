@@ -10,6 +10,11 @@ ENV POETRY_VERSION=${POETRY_VERSION}
 RUN useradd --create-home app
 WORKDIR /app
 
+# system deps for building some wheels and curl for installing node if needed
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential\
+    && rm -rf /var/lib/apt/lists/*
+
 # copy only poetry files first to leverage docker cache
 COPY pyproject.toml poetry.lock* /app/
 
