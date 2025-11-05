@@ -6,6 +6,7 @@ authors = [
   "Kalugin Egor <kalugin.ei@phystech.edu>",
   "Konovalov Denis <where.adm@gmail.com>",
   "Barbashov Igor <barbashov.is@phystech.edu>",
+  "Lukianova ALina <alinaselkova@gmail.com>",
 ]
 readme = "README.md"
 packages = [{include = "src"}]
