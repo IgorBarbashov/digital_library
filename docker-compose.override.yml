@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    env_file: .env
+    volumes:
+      - ./:/app:delegated
+    ports:
+      - "${PORT}:${PORT}"
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "${PORT}", "--reload"]
+    depends_on:
+      db:
+        condition: service_healthy
