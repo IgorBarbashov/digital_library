@@ -44,4 +44,4 @@ ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 EXPOSE ${PORT}
 
-CMD ["poetry", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "${PORT}"]
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "${PORT}"]
