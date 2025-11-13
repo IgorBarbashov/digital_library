@@ -8,8 +8,7 @@ services:
       - ./:/app:delegated
     ports:
       - "${PORT}:${PORT}"
-    command: >
-      sh -c "alembic upgrade head && uvicorn src.main:app --host 0.0.0.0 --port ${PORT} --reload"
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "${PORT}", "--reload"]
     depends_on:
       db:
         condition: service_healthy

@@ -27,10 +27,10 @@ RUN python -m pip install --upgrade pip \
 # export and install dependencies using poetry
 ARG INSTALL_DEV=false
 RUN if [ "$INSTALL_DEV" = "true" ]; then \
-    poetry install --no-interaction --no-ansi --with dev; \
-    else \
-    poetry install --no-interaction --no-ansi --no-dev; \
-    fi
+            poetry install --no-interaction --no-ansi --with dev; \
+        else \
+            poetry install --no-interaction --no-ansi --no-dev; \
+        fi
 
 # copy application code
 COPY . /app
@@ -44,4 +44,4 @@ ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 EXPOSE ${PORT}
 
-CMD ["sh", "-c", "alembic upgrade head && python -m uvicorn src.main:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["python", "-m", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "${PORT}"]
