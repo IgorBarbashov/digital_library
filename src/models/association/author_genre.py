@@ -6,6 +6,8 @@ from sqlmodel import Field, SQLModel  # type: ignore
 
 
 class AuthorGenre(SQLModel, table=True):
+    __tablename__ = "authorgenre"  # type: ignore
+
     author_id: Optional[int] = Field(
         default=None, foreign_key="author.id", primary_key=True
     )

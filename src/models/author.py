@@ -9,6 +9,8 @@ from .association.author_genre import AuthorGenre
 
 
 class AuthorORM(SQLModel, table=True):
+    __tablename__ = "author"  # type: ignore
+
     id: Optional[int] = Field(default=None, primary_key=True)
     first_name: str = Field(...)
     last_name: str = Field(...)

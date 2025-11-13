@@ -8,6 +8,8 @@ from .association.author_genre import AuthorGenre
 
 
 class GenreORM(SQLModel, table=True):
+    __tablename__ = "genre"  # type: ignore
+
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(...)
     authors: List["AuthorORM"] = Relationship(
