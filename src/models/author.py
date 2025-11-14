@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.association.author_genre import AuthorGenre
 from src.models.base import Base, BaseModelMixin
+
+if TYPE_CHECKING:
+    from src.models.genre import Genre
 
 
 class Author(Base, BaseModelMixin):
