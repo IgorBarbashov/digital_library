@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from alembic.config import Config
@@ -7,15 +8,15 @@ from alembic import command
 from src.setting import settings
 
 
-def run_migrations():
+async def run_migrations():
     alembic_cfg = Config("alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.alembic_db_dsn)
-    command.upgrade(alembic_cfg, "head")
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.db_dsn)
+    await asyncio.to_thread(command.upgrade, alembic_cfg, "head")
 
 
 @asynccontextmanager
 async def lifespan(app_: FastAPI):
-    run_migrations()
+    await run_migrations()
     yield
 
 

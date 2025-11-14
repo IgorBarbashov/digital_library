@@ -32,16 +32,5 @@ class Settings(BaseSettings):
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         )
 
-    @property
-    def alembic_db_dsn(self) -> str:
-        """Return a postgres DSN fo Alembic. If DATABASE_URL is provided, use it;
-        otherwise compose a DSN from the individual Postgres fields.
-        """
-
-        return (
-            f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}"
-            f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
-        )
-
 
 settings = Settings.model_validate({})
