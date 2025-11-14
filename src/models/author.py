@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 
-from .association.author_genre import AuthorGenre
+from src.models.association.author_genre import AuthorGenre
 
 
 class AuthorORM(SQLModel, table=True):
