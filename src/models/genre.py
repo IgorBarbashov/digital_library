@@ -11,7 +11,7 @@ class GenreORM(SQLModel, table=True):
     __tablename__ = "genre"  # type: ignore
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(...)
+    name: str = Field(..., unique=True)
     authors: List["AuthorORM"] = Relationship(
         back_populates="genres", link_model=AuthorGenre
     )
