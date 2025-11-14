@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 603068b5c749
+Revision ID: 843cc651aad2
 Revises: 
-Create Date: 2025-11-14 12:08:03.957839
+Create Date: 2025-11-14 12:48:40.705956
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '603068b5c749'
+revision: str = '843cc651aad2'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,27 +25,27 @@ def upgrade() -> None:
     sa.Column('first_name', sa.String(), nullable=False),
     sa.Column('last_name', sa.String(), nullable=False),
     sa.Column('birth_date', sa.DateTime(), nullable=True),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('create_at', sa.DateTime(), nullable=False),
-    sa.Column('update_at', sa.DateTime(), nullable=False),
+    sa.Column('id', sa.UUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
+    sa.Column('create_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('update_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('first_name'),
     sa.UniqueConstraint('last_name')
     )
     op.create_table('genre',
     sa.Column('name', sa.String(), nullable=False),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('create_at', sa.DateTime(), nullable=False),
-    sa.Column('update_at', sa.DateTime(), nullable=False),
+    sa.Column('id', sa.UUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
+    sa.Column('create_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('update_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
     op.create_table('author_genre',
     sa.Column('author_id', sa.UUID(), nullable=False),
     sa.Column('genre_id', sa.UUID(), nullable=False),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('create_at', sa.DateTime(), nullable=False),
-    sa.Column('update_at', sa.DateTime(), nullable=False),
+    sa.Column('id', sa.UUID(), server_default=sa.text('gen_random_uuid()'), nullable=False),
+    sa.Column('create_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('update_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['author_id'], ['author.id'], ),
     sa.ForeignKeyConstraint(['genre_id'], ['genre.id'], ),
     sa.PrimaryKeyConstraint('author_id', 'genre_id', 'id')
