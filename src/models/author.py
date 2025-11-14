@@ -3,18 +3,28 @@ from __future__ import annotations
 from datetime import date
 from typing import List, Optional
 
-from sqlmodel import Field, Relationship, SQLModel  # type: ignore
+from sqlalchemy import DateTime, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.association.author_genre import AuthorGenre
+from src.models.base import Base, BaseModelMixin
 
 
-class AuthorORM(SQLModel, table=True):
-    __tablename__ = "author"  # type: ignore
+class Author(Base, BaseModelMixin):
+    __tablename__ = "author"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
-    first_name: str = Field(...)
-    last_name: str = Field(...)
-    birth_date: Optional[date] = Field(default=None)
-    genres: List["GenreORM"] = Relationship(
-        back_populates="authors", link_model=AuthorGenre
+    first_name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    last_name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    birth_date: Mapped[Optional[date]] = mapped_column(
+        DateTime, nullable=True, default=None
+    )
+    author_genres: Mapped[List[AuthorGenre]] = relationship(
+        "AuthorGenre", back_populates="author"
+    )
+    genres: Mapped[List["Genre"]] = relationship(
+        "Genre",
+        secondary="author_genre",
+        back_populates="authors",
+        viewonly=True,
+        lazy="select",
     )

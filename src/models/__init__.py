@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from sqlmodel import SQLModel
-
 from src.models.association.author_genre import AuthorGenre
-from src.models.author import AuthorORM
-from src.models.genre import GenreORM
+from src.models.author import Author
+from src.models.base import Base, BaseModelMixin
+from src.models.genre import Genre
 
-__all__ = ["SQLModel", "AuthorORM", "GenreORM", "AuthorGenre"]
+__all__ = ["Base", "BaseModelMixin", "Author", "Genre", "AuthorGenre"]
