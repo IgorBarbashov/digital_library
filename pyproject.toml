@@ -37,8 +37,11 @@ build-backend = "poetry.core.masonry.api"
 include = ["src"]
 exclude = [
     "**/__pycache__",
-    "alembic/**.*",
+    "alembic",
 ]
 reportMissingImports = "error"
 reportMissingTypeStubs = false
 pythonVersion = "3.14"
+
+[tool.ruff]
+exclude = ["alembic"]
