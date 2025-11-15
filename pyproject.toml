@@ -34,15 +34,14 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pyright]
-include = ["src"]
+include = ["src", "tests"]
 exclude = [
     "**/__pycache__",
     "alembic",
-    "tests"
 ]
 reportMissingImports = "error"
 reportMissingTypeStubs = false
 pythonVersion = "3.14"
 
 [tool.ruff]
-extend-exclude = ["tests", "alembic"]
+extend-exclude = ["alembic"]

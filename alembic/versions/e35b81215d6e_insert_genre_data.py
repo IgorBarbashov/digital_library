@@ -1,20 +1,23 @@
 """Insert Genre data
 
-Revision ID: da28606709ae
-Revises: 843cc651aad2
-Create Date: 2025-11-14 12:51:22.178804
+Revision ID: e35b81215d6e
+Revises: da14d399f331
+Create Date: 2025-11-15 10:16:45.637766
 
 """
 
+import uuid
+from datetime import datetime
 from typing import Sequence, Union
 
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import UUID
 
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = "da28606709ae"
-down_revision: Union[str, Sequence[str], None] = "843cc651aad2"
+revision: str = "e35b81215d6e"
+down_revision: Union[str, Sequence[str], None] = "da14d399f331"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -34,8 +37,28 @@ def upgrade() -> None:
         "Юмор",
     ]
 
-    genre_table = sa.table("genre", sa.column("name", sa.String))
-    op.bulk_insert(genre_table, [{"name": genre} for genre in genres])
+    genre_table = sa.table(
+        "genre",
+        sa.column("id", UUID(as_uuid=True)),
+        sa.column("create_at", sa.DateTime),
+        sa.column("update_at", sa.DateTime),
+        sa.column("name", sa.String),
+    )
+
+    now = datetime.utcnow()
+
+    op.bulk_insert(
+        genre_table,
+        [
+            {
+                "id": str(uuid.uuid4()),
+                "create_at": now,
+                "update_at": now,
+                "name": genre,
+            }
+            for genre in genres
+        ],
+    )
 
 
 def downgrade() -> None:
