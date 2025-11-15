@@ -22,5 +22,9 @@ class BaseModelMixin:
         DateTime, nullable=False, default=datetime.utcnow, server_default=func.now()
     )
     update_at: Mapped[DateTime] = mapped_column(
-        DateTime, nullable=False, default=datetime.utcnow, server_default=func.now()
+        DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        server_default=func.now(),
+        onupdate=func.now(),
     )

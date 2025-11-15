@@ -38,10 +38,11 @@ include = ["src"]
 exclude = [
     "**/__pycache__",
     "alembic",
+    "tests"
 ]
 reportMissingImports = "error"
 reportMissingTypeStubs = false
 pythonVersion = "3.14"
 
 [tool.ruff]
-exclude = ["alembic"]
+extend-exclude = ["tests", "alembic"]

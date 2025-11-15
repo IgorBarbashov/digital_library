@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 class Author(Base, BaseModelMixin):
     __tablename__ = "author"
 
-    first_name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
-    last_name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    first_name: Mapped[str] = mapped_column(String, nullable=False)
+    last_name: Mapped[str] = mapped_column(String, nullable=False)
     birth_date: Mapped[Optional[date]] = mapped_column(
         DateTime, nullable=True, default=None
     )
