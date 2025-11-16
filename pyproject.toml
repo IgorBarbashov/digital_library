@@ -20,6 +20,7 @@ pydantic = "^2.12.3"
 sqlalchemy = "^2.0.44"
 pydantic-settings = "^2.11.0"
 asyncpg = "^0.30.0"
+alembic = "^1.17.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -32,3 +33,16 @@ httpx = "^0.28.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pyright]
+include = ["src", "tests"]
+exclude = [
+    "**/__pycache__",
+    "alembic",
+]
+reportMissingImports = "error"
+reportMissingTypeStubs = false
+pythonVersion = "3.14"
+
+[tool.ruff]
+extend-exclude = ["alembic"]
