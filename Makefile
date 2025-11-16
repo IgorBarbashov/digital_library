@@ -46,3 +46,6 @@ shell:
 	$(COMPOSE) exec web /bin/bash || $(COMPOSE) exec web sh
 
 restart: down up-prod
+
+check:
+	poetry run ruff check . && poetry run pyright
