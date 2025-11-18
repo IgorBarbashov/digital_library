@@ -1,17 +1,23 @@
-import uuid
-from datetime import datetime
+from datetime import date
+from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
+
+from src.schemas.base import BaseEntity, BaseEntityResponse
+from src.schemas.genre import GenreResponse
 
 
-class AuthorBase(BaseModel):
+class AuthorBase(BaseEntity):
     first_name: str
     last_name: str
-    create_at: datetime
-    update_at: datetime
+    birth_date: Optional[date]
 
 
-class AuthorResponse(AuthorBase):
-    uuid: uuid.UUID
+class AuthorResponse(AuthorBase, BaseEntityResponse):
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AuthorWithGenreResponse(AuthorResponse):
+    genres: List[GenreResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
