@@ -38,6 +38,16 @@ class AuthorRepository:
 
         return result.scalar_one_or_none()
 
+    async def get_by_id_with_genre(self, author_id: uuid.UUID) -> Optional[Author]:
+        stmt = (
+            select(Author)
+            .options(selectinload(Author.genres))
+            .where(Author.id == author_id)
+        )
+        result = await self.db.execute(stmt)
+
+        return result.scalar_one_or_none()
+
 
 async def get_author_repository(
     db: AsyncSession = Depends(get_async_session),

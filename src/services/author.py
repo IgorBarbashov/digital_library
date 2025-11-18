@@ -22,13 +22,19 @@ class AuthorService:
             authors = await self.repo.get_all(skip=skip, limit=limit)
             return [AuthorResponse.from_orm(author) for author in authors]
 
-    async def get_by_id(self, author_id: uuid.UUID) -> AuthorResponse:
-        author = await self.repo.get_by_id(author_id)
-
-        if not author:
-            raise AuthorNotFound(author_id)
-
-        return author
+    async def get_by_id(
+        self, author_id: uuid.UUID, with_genre: bool
+    ) -> Union[AuthorResponse, AuthorWithGenreResponse]:
+        if with_genre:
+            author = await self.repo.get_by_id_with_genre(author_id)
+            if not author:
+                raise AuthorNotFound(author_id)
+            return AuthorWithGenreResponse.from_orm(author)
+        else:
+            author = await self.repo.get_by_id(author_id)
+            if not author:
+                raise AuthorNotFound(author_id)
+            return AuthorResponse.from_orm(author)
 
 
 async def get_author_service(
