@@ -1,12 +1,10 @@
 from fastapi import FastAPI
 
 from src.api.v1.author import router as author_router
-from src.api.v1.root import router as root_router
 
 api_base_prefix = "/api/v1"
 
 routers = {
-    "root": ["", root_router],
     "author": ["/author", author_router],
 }
 

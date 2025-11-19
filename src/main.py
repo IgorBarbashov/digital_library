@@ -29,3 +29,8 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
 )
+
+
+@app.get("/")
+async def root() -> dict[str, str]:
+    return {"message": "Hello, world!"}
