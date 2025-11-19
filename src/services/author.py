@@ -22,7 +22,7 @@ class AuthorService:
     ) -> Union[Author, AuthorWithGenre]:
         author = await self.repo.get_by_id(author_id=author_id, with_genre=with_genre)
 
-        if not author:
+        if author is None:
             raise AuthorNotFound(author_id)
 
         return author

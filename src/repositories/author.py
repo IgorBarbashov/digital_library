@@ -44,6 +44,9 @@ class AuthorRepository:
         result = await self.db.execute(stmt)
         author = result.scalar_one_or_none()
 
+        if author is None:
+            return None
+
         return (
             AuthorWithGenre.from_orm(author) if with_genre else Author.from_orm(author)
         )
