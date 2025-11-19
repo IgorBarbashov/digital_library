@@ -5,7 +5,7 @@ from alembic.config import Config
 from fastapi import FastAPI
 
 from alembic import command
-from src.api.v1.author import router as author_router
+from src.api.v1.init import init_routers
 from src.setting import settings
 
 
@@ -18,6 +18,7 @@ async def run_migrations():
 @asynccontextmanager
 async def lifespan(app_: FastAPI):
     await run_migrations()
+    init_routers(app_)
     yield
 
 
@@ -26,11 +27,3 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
 )
-
-
-@app.get("/")
-async def root() -> dict[str, str]:
-    return {"message": "Hello, world!"}
-
-
-app.include_router(author_router, prefix="/api/v1/author", tags=["author"])
