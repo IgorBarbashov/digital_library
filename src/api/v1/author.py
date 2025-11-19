@@ -1,9 +1,8 @@
 import uuid
 from typing import List, Union
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, Path, Query
 
-from src.exceptions.entity import AuthorNotFound
 from src.schemas.author import Author, AuthorWithGenre
 from src.services.author import AuthorService, get_author_service
 
@@ -36,8 +35,6 @@ async def get_by_id(
     id: uuid.UUID = Path(..., description="ID автора"),
     with_genre: bool = Query(False, description="Загружать ли жанры"),
 ):
-    try:
-        author = await service.get_by_id(author_id=id, with_genre=with_genre)
-        return author
-    except AuthorNotFound as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.msg)
+    author = await service.get_by_id(author_id=id, with_genre=with_genre)
+
+    return author
