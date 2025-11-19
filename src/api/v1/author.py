@@ -4,7 +4,7 @@ from typing import List, Union
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 from src.exceptions.entity import AuthorNotFound
-from src.schemas.author import AuthorResponse, AuthorWithGenreResponse
+from src.schemas.author import Author, AuthorWithGenre
 from src.services.author import AuthorService, get_author_service
 
 router = APIRouter()
@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_model=Union[List[AuthorResponse], List[AuthorWithGenreResponse]],
+    response_model=Union[List[Author], List[AuthorWithGenre]],
     summary="Получить список авторов",
 )
 async def get_all(
@@ -28,7 +28,7 @@ async def get_all(
 
 @router.get(
     "/{id}",
-    response_model=Union[AuthorResponse, AuthorWithGenreResponse],
+    response_model=Union[Author, AuthorWithGenre],
     summary="Получить автора по id",
 )
 async def get_by_id(

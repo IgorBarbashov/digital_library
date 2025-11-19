@@ -3,21 +3,19 @@ from typing import List, Optional
 
 from pydantic import ConfigDict
 
-from src.schemas.base import BaseEntity, BaseEntityResponse
-from src.schemas.genre import GenreResponse
+from src.schemas.base import BaseEntity
+from src.schemas.genre import Genre
 
 
-class AuthorBase(BaseEntity):
+class Author(BaseEntity):
     first_name: str
     last_name: str
     birth_date: Optional[date]
 
-
-class AuthorResponse(AuthorBase, BaseEntityResponse):
     model_config = ConfigDict(from_attributes=True)
 
 
-class AuthorWithGenreResponse(AuthorResponse):
-    genres: List[GenreResponse] = []
+class AuthorWithGenre(Author):
+    genres: List[Genre] = []
 
     model_config = ConfigDict(from_attributes=True)

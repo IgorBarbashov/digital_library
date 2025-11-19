@@ -4,11 +4,11 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class BaseEntity(BaseModel):
+class Base(BaseModel):
     pass
 
 
-class BaseEntityResponse(BaseEntity):
+class BaseEntity(Base):
     id: uuid.UUID
     create_at: datetime
     update_at: datetime

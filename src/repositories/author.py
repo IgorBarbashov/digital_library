@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, Sequence
+from typing import List, Optional, Union
 
 from fastapi import Depends
 from sqlalchemy import select
@@ -7,46 +7,46 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.db.db import get_async_session
-from src.models.author import Author
+from src.models.author import Author as AuthorOrm
+from src.schemas.author import Author, AuthorWithGenre
 
 
 class AuthorRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_all(self, skip: int, limit: int) -> Sequence[Author]:
-        stmt = select(Author).order_by(Author.create_at.asc()).offset(skip).limit(limit)
-        result = await self.db.execute(stmt)
-
-        return result.scalars().all()
-
-    async def get_all_with_genre(self, skip: int, limit: int) -> Sequence[Author]:
+    async def get_all(
+        self, skip: int, limit: int, with_genre: bool
+    ) -> Union[List[Author], List[AuthorWithGenre]]:
         stmt = (
-            select(Author)
-            .options(selectinload(Author.genres))
-            .order_by(Author.create_at.asc())
+            select(AuthorOrm)
+            .order_by(AuthorOrm.create_at.asc())
             .offset(skip)
             .limit(limit)
         )
+        if with_genre:
+            stmt = stmt.options(selectinload(AuthorOrm.genres))
         result = await self.db.execute(stmt)
+        authors = result.scalars().all()
 
-        return result.scalars().all()
-
-    async def get_by_id(self, author_id: uuid.UUID) -> Optional[Author]:
-        stmt = select(Author).where(Author.id == author_id)
-        result = await self.db.execute(stmt)
-
-        return result.scalar_one_or_none()
-
-    async def get_by_id_with_genre(self, author_id: uuid.UUID) -> Optional[Author]:
-        stmt = (
-            select(Author)
-            .options(selectinload(Author.genres))
-            .where(Author.id == author_id)
+        return (
+            [AuthorWithGenre.from_orm(author) for author in authors]
+            if with_genre
+            else [Author.from_orm(author) for author in authors]
         )
-        result = await self.db.execute(stmt)
 
-        return result.scalar_one_or_none()
+    async def get_by_id(
+        self, author_id: uuid.UUID, with_genre: bool
+    ) -> Union[Optional[Author], Optional[AuthorWithGenre]]:
+        stmt = select(AuthorOrm).where(AuthorOrm.id == author_id)
+        if with_genre:
+            stmt = stmt.options(selectinload(AuthorOrm.genres))
+        result = await self.db.execute(stmt)
+        author = result.scalar_one_or_none()
+
+        return (
+            AuthorWithGenre.from_orm(author) if with_genre else Author.from_orm(author)
+        )
 
 
 async def get_author_repository(
