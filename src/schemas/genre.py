@@ -1,9 +1,9 @@
 from pydantic import ConfigDict
 
-from src.schemas.base import BaseEntity
+from src.schemas.base import BaseSchema
 
 
-class Genre(BaseEntity):
+class GenreSchema(BaseSchema):
     name: str
 
     model_config = ConfigDict(from_attributes=True)

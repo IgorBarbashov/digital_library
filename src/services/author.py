@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from src.exceptions.entity import AuthorNotFound
 from src.repositories.author import AuthorRepository, get_author_repository
-from src.schemas.author import Author, AuthorWithGenre
+from src.schemas.author import AuthorSchema, AuthorWithGenreSchema
 
 
 class AuthorService:
@@ -14,12 +14,12 @@ class AuthorService:
 
     async def get_all(
         self, skip: int, limit: int, with_genre: bool
-    ) -> Union[List[Author], List[AuthorWithGenre]]:
+    ) -> Union[List[AuthorSchema], List[AuthorWithGenreSchema]]:
         return await self.repo.get_all(skip=skip, limit=limit, with_genre=with_genre)
 
     async def get_by_id(
         self, author_id: uuid.UUID, with_genre: bool
-    ) -> Union[Author, AuthorWithGenre]:
+    ) -> Union[AuthorSchema, AuthorWithGenreSchema]:
         author = await self.repo.get_by_id(author_id=author_id, with_genre=with_genre)
 
         if author is None:

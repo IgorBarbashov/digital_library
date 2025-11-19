@@ -3,11 +3,11 @@ from typing import List, Optional
 
 from pydantic import ConfigDict
 
-from src.schemas.base import BaseEntity
-from src.schemas.genre import Genre
+from src.schemas.base import BaseSchema
+from src.schemas.genre import GenreSchema
 
 
-class Author(BaseEntity):
+class AuthorSchema(BaseSchema):
     first_name: str
     last_name: str
     birth_date: Optional[date]
@@ -15,7 +15,7 @@ class Author(BaseEntity):
     model_config = ConfigDict(from_attributes=True)
 
 
-class AuthorWithGenre(Author):
-    genres: List[Genre] = []
+class AuthorWithGenreSchema(AuthorSchema):
+    genres: List[GenreSchema] = []
 
     model_config = ConfigDict(from_attributes=True)

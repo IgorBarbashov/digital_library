@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.db.db import get_async_session
-from src.models.author import Author as AuthorOrm
-from src.schemas.author import Author, AuthorWithGenre
+from src.models.author import Author
+from src.schemas.author import AuthorSchema, AuthorWithGenreSchema
 
 
 class AuthorRepository:
@@ -17,30 +17,25 @@ class AuthorRepository:
 
     async def get_all(
         self, skip: int, limit: int, with_genre: bool
-    ) -> Union[List[Author], List[AuthorWithGenre]]:
-        stmt = (
-            select(AuthorOrm)
-            .order_by(AuthorOrm.create_at.asc())
-            .offset(skip)
-            .limit(limit)
-        )
+    ) -> Union[List[AuthorSchema], List[AuthorWithGenreSchema]]:
+        stmt = select(Author).order_by(Author.create_at.asc()).offset(skip).limit(limit)
         if with_genre:
-            stmt = stmt.options(selectinload(AuthorOrm.genres))
+            stmt = stmt.options(selectinload(Author.genres))
         result = await self.db.execute(stmt)
         authors = result.scalars().all()
 
         return (
-            [AuthorWithGenre.from_orm(author) for author in authors]
+            [AuthorWithGenreSchema.from_orm(author) for author in authors]
             if with_genre
-            else [Author.from_orm(author) for author in authors]
+            else [AuthorSchema.from_orm(author) for author in authors]
         )
 
     async def get_by_id(
         self, author_id: uuid.UUID, with_genre: bool
-    ) -> Union[Optional[Author], Optional[AuthorWithGenre]]:
-        stmt = select(AuthorOrm).where(AuthorOrm.id == author_id)
+    ) -> Union[Optional[AuthorSchema], Optional[AuthorWithGenreSchema]]:
+        stmt = select(Author).where(Author.id == author_id)
         if with_genre:
-            stmt = stmt.options(selectinload(AuthorOrm.genres))
+            stmt = stmt.options(selectinload(Author.genres))
         result = await self.db.execute(stmt)
         author = result.scalar_one_or_none()
 
@@ -48,7 +43,9 @@ class AuthorRepository:
             return None
 
         return (
-            AuthorWithGenre.from_orm(author) if with_genre else Author.from_orm(author)
+            AuthorWithGenreSchema.from_orm(author)
+            if with_genre
+            else AuthorSchema.from_orm(author)
         )
 
 
