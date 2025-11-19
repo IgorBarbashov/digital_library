@@ -8,10 +8,11 @@ from sqlalchemy.orm import selectinload
 
 from src.db.db import get_async_session
 from src.models.author import Author
+from src.repositories.author_interfaces import AuthorRepository
 from src.schemas.author import AuthorSchema, AuthorWithGenreSchema
 
 
-class AuthorRepository:
+class AuthorRepositoryPG(AuthorRepository):
     def __init__(self, db: AsyncSession):
         self.db = db
 
@@ -52,4 +53,4 @@ class AuthorRepository:
 async def get_author_repository(
     db: AsyncSession = Depends(get_async_session),
 ) -> AuthorRepository:
-    return AuthorRepository(db)
+    return AuthorRepositoryPG(db)

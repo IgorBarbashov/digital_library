@@ -4,7 +4,8 @@ from typing import List, Union
 from fastapi import Depends
 
 from src.exceptions.entity import AuthorNotFound
-from src.repositories.author import AuthorRepository, get_author_repository
+from src.repositories.author import get_author_repository
+from src.repositories.author_interfaces import AuthorRepository
 from src.schemas.author import AuthorSchema, AuthorWithGenreSchema
 
 
