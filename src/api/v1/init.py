@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.api.v1.author import router as author_router
+from src.entities.author.api import router as author_router
 
 api_base_prefix = "/api/v1"
 

@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Optional, Protocol, Union
 
-from src.schemas.author import AuthorSchema, AuthorWithGenreSchema
+from src.entities.author.schema import AuthorSchema, AuthorWithGenreSchema
 
 
 class AuthorRepository(Protocol):

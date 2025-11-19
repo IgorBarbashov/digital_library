@@ -7,11 +7,11 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.base import Base, BaseModelMixin
+from src.entities.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
-    from src.models.author import Author
-    from src.models.genre import Genre
+    from src.entities.author.models import Author
+    from src.entities.genre.models import Genre
 
 
 class AuthorGenre(Base, BaseModelMixin):

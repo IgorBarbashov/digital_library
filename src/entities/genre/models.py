@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, List
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.association.author_genre import AuthorGenre
-from src.models.base import Base, BaseModelMixin
+from src.entities.common.association.author_genre import AuthorGenre
+from src.entities.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
-    from src.models.author import Author
+    from src.entities.author.models import Author
 
 
 class Genre(Base, BaseModelMixin):

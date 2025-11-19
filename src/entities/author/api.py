@@ -3,8 +3,8 @@ from typing import List, Union
 
 from fastapi import APIRouter, Depends, Path, Query
 
-from src.schemas.author import AuthorSchema, AuthorWithGenreSchema
-from src.services.author import AuthorService, get_author_service
+from src.entities.author.schema import AuthorSchema, AuthorWithGenreSchema
+from src.entities.author.services import AuthorService, get_author_service
 
 router = APIRouter()
 
