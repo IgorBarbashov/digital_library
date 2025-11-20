@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING, List, Optional
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.entities.common.association.author_genre import AuthorGenre
-from src.entities.common.models import Base, BaseModelMixin
+from src.domains.common.association.author_genre import AuthorGenre
+from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
-    from src.entities.genre.models import Genre
+    from src.domains.genre.models import Genre
 
 
 class Author(Base, BaseModelMixin):

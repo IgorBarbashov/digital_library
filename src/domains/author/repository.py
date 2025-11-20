@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.db.db import get_async_session
-from src.entities.author.domain_services import AuthorRepository
-from src.entities.author.models import Author
-from src.entities.author.schema import AuthorSchema, AuthorWithGenreSchema
+from src.domains.author.models import Author
+from src.domains.author.protocols import AuthorRepository
+from src.domains.author.schema import AuthorSchema, AuthorWithGenreSchema
 
 
 class AuthorRepositoryPG(AuthorRepository):

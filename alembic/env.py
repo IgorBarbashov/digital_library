@@ -6,10 +6,10 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
-from src.entities.common.association.author_genre import AuthorGenre
-from src.entities.author.models import Author
-from src.entities.common.models import Base, BaseModelMixin
-from src.entities.genre.models import Genre
+from src.domains.common.association.author_genre import AuthorGenre
+from src.domains.author.models import Author
+from src.domains.common.models import Base, BaseModelMixin
+from src.domains.genre.models import Genre
 from src.setting import settings
 
 # this is the Alembic Config object, which provides

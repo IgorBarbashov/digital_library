@@ -3,9 +3,9 @@ from typing import List, Union
 
 from fastapi import Depends
 
-from src.entities.author.domain_services import AuthorRepository
-from src.entities.author.repository import get_author_repository
-from src.entities.author.schema import AuthorSchema, AuthorWithGenreSchema
+from src.domains.author.protocols import AuthorRepository
+from src.domains.author.repository import get_author_repository
+from src.domains.author.schema import AuthorSchema, AuthorWithGenreSchema
 from src.exceptions.entity import AuthorNotFound
 
 

@@ -1,6 +1,6 @@
 from pydantic import ConfigDict
 
-from src.entities.common.schema import BaseSchema
+from src.domains.common.schema import BaseSchema
 
 
 class GenreSchema(BaseSchema):

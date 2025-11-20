@@ -3,8 +3,8 @@ from typing import List, Optional
 
 from pydantic import ConfigDict
 
-from src.entities.common.schema import BaseSchema
-from src.entities.genre.schema import GenreSchema
+from src.domains.common.schema import BaseSchema
+from src.domains.genre.schema import GenreSchema
 
 
 class AuthorSchema(BaseSchema):
