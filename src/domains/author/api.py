@@ -3,15 +3,15 @@ from typing import List, Union
 
 from fastapi import APIRouter, Depends, Path, Query
 
-from src.schemas.author import Author, AuthorWithGenre
-from src.services.author import AuthorService, get_author_service
+from src.domains.author.schema import AuthorSchema, AuthorWithGenreSchema
+from src.domains.author.services import AuthorService, get_author_service
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=Union[List[Author], List[AuthorWithGenre]],
+    response_model=Union[List[AuthorSchema], List[AuthorWithGenreSchema]],
     summary="Получить список авторов",
 )
 async def get_all(
@@ -27,7 +27,7 @@ async def get_all(
 
 @router.get(
     "/{id}",
-    response_model=Union[Author, AuthorWithGenre],
+    response_model=Union[AuthorSchema, AuthorWithGenreSchema],
     summary="Получить автора по id",
 )
 async def get_by_id(

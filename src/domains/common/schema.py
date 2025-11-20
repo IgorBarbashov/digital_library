@@ -8,7 +8,7 @@ class Base(BaseModel):
     pass
 
 
-class BaseEntity(Base):
+class BaseSchema(Base):
     id: uuid.UUID
     create_at: datetime
     update_at: datetime
