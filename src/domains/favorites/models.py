@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, types
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 from src.domains.common.models import Base, BaseModelMixin
 
@@ -18,10 +19,10 @@ class Favorites(Base, BaseModelMixin):
     __tablename__ = "favorites"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        types.UUID, ForeignKey("user.id"), unique=False
+        PG_UUID(as_uuid=True), ForeignKey("user.id"), unique=False
     )
     book_id: Mapped[uuid.UUID] = mapped_column(
-        types.UUID, ForeignKey("book.id"), unique=False
+        PG_UUID(as_uuid=True), ForeignKey("book.id"), unique=False
     )
 
     # user: Mapped["User"] = relationship("User", back_populates="favorites")
