@@ -15,5 +15,5 @@ class Role(Base, BaseModelMixin):
     __tablename__ = "role"
 
     name: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
-    permissions: Mapped[int] = mapped_column(Integer)
+    permissions: Mapped[int] = mapped_column(Integer, nullable=False)
     users: Mapped[List["User"]] = relationship("User", back_populates="role")
