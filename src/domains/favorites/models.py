@@ -9,7 +9,7 @@ from src.domains.common.models import Base, BaseModelMixin
 
 
 class Favorites(Base, BaseModelMixin):
-    __tablename__ = "fasvorites"
+    __tablename__ = "favorites"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         types.UUID, ForeignKey("user.id"), unique=False
