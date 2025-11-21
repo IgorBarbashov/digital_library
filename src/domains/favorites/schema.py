@@ -1,4 +1,5 @@
 import uuid
+from pydantic import ConfigDict
 from src.domains.common.schema import BaseSchema
 
 
@@ -8,8 +9,10 @@ class FavoriteBase(BaseSchema):
 
 
 class FavoriteCreate(FavoriteBase):
-    pass
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FavoriteUpdate(FavoriteBase):
-    pass
+
+    model_config = ConfigDict(from_attributes=True)

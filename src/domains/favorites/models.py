@@ -2,10 +2,16 @@ from __future__ import annotations
 
 import uuid
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey, types
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.domains.common.models import Base, BaseModelMixin
+
+if TYPE_CHECKING:
+    # from src.domains.user.models import User
+    from src.domains.book.models import Book
 
 
 class Favorites(Base, BaseModelMixin):
@@ -17,3 +23,6 @@ class Favorites(Base, BaseModelMixin):
     book_id: Mapped[uuid.UUID] = mapped_column(
         types.UUID, ForeignKey("book.id"), unique=False
     )
+
+    # user: Mapped["User"] = relationship("User", back_populates="favorites")
+    book: Mapped["Book"] = relationship("Book", back_populates="favorites")
