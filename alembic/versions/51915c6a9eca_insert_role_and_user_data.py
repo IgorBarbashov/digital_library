@@ -1,11 +1,10 @@
 """Insert Role and User data
 
-Revision ID: 8adb3d5e111e
-Revises: da1fd554990d
-Create Date: 2025-11-21 10:05:11.307807
+Revision ID: 51915c6a9eca
+Revises: 30f3229dabd2
+Create Date: 2025-11-21 12:59:32.572578
 
 """
-
 import uuid
 from datetime import datetime
 from typing import Sequence, Union
@@ -15,9 +14,10 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from alembic import op
 
+
 # revision identifiers, used by Alembic.
-revision: str = "8adb3d5e111e"
-down_revision: Union[str, Sequence[str], None] = "da1fd554990d"
+revision: str = '51915c6a9eca'
+down_revision: Union[str, Sequence[str], None] = '30f3229dabd2'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -35,7 +35,6 @@ def upgrade() -> None:
         sa.column("create_at", sa.DateTime),
         sa.column("update_at", sa.DateTime),
         sa.column("name", sa.String),
-        sa.column("permissions", sa.Integer),
     )
 
     now = datetime.utcnow()
@@ -48,7 +47,6 @@ def upgrade() -> None:
                 "create_at": now,
                 "update_at": now,
                 "name": role,
-                "permissions": 1,
             }
             for role in roles
         ],
@@ -133,3 +131,4 @@ def downgrade() -> None:
     )
 
     op.get_bind().execute(sa.text("DELETE FROM role WHERE name IN ('admin', 'user')"))
+
