@@ -10,5 +10,6 @@ class FavoriteBase(BaseSchema):
 class FavoriteCreate(FavoriteBase):
     pass
 
+
 class FavoriteUpdate(FavoriteBase):
     pass
