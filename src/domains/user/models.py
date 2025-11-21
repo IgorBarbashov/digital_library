@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy import UUID, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.domains.common.models import Base, BaseModelMixin
@@ -27,7 +28,7 @@ class User(Base, BaseModelMixin):
     failed_login_attempts: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0
     )
-    role_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("role.id"), nullable=False, ondelete="RESTRICT"
+    role_id: Mapped[uuid.UUID] = mapped_column(
+        UUID, ForeignKey("role.id", ondelete="RESTRICT"), nullable=False
     )
     role: Mapped["Role"] = relationship("Role", back_populates="users")
