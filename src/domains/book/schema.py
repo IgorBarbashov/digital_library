@@ -3,12 +3,12 @@ from pydantic import ConfigDict
 from src.domains.common.schema import BaseSchema
 
 
-class BookBase(BaseSchema):
+class BookBaseSchema(BaseSchema):
     title: str
     genre_id: uuid.UUID
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class BookCreate(BookBase):
+class BookCreateSchema(BookBaseSchema):
     model_config = ConfigDict(from_attributes=True)
