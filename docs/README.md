@@ -1,5 +1,7 @@
 ### Архитектура проекта
 
+Разработка проекта ведется в соответствии с принципами `Layered Architecture`
+
 ### Файловая структура проекта
 
 ```
@@ -93,6 +95,12 @@ from src.domains.genre.models import Genre
 
 ### Преобразование типов данных между архитектурными слоями
 
+### Dependency Injection
+
+### Follow the REST
+
+### FastAPI response serialization
+
 ### Обработка исключений
 
 ### Запуск проекта
@@ -105,3 +113,4 @@ from src.domains.genre.models import Genre
 2. Кросс-ревью
 3. Тесты
 
+### Логирование
