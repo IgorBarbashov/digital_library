@@ -19,10 +19,10 @@ class Favorites(Base, BaseModelMixin):
     __tablename__ = "favorites"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("user.id"), unique=False
+        PG_UUID(as_uuid=True), ForeignKey("user.id"), unique=False, index=True
     )
     book_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("book.id"), unique=False
+        PG_UUID(as_uuid=True), ForeignKey("book.id"), unique=False, index=True
     )
 
     user: Mapped["User"] = relationship("User", back_populates="favorites")
