@@ -4,14 +4,14 @@ import uuid
 
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, types
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
-    # from src.domains.user.models import User
+    from src.domains.user.models import User
     from src.domains.book.models import Book
 
 
@@ -25,5 +25,5 @@ class Favorites(Base, BaseModelMixin):
         PG_UUID(as_uuid=True), ForeignKey("book.id"), unique=False
     )
 
-    # user: Mapped["User"] = relationship("User", back_populates="favorites")
+    user: Mapped["User"] = relationship("User", back_populates="favorites")
     book: Mapped["Book"] = relationship("Book", back_populates="favorites")
