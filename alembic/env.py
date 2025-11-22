@@ -10,6 +10,8 @@ from src.domains.common.association.author_genre import AuthorGenre
 from src.domains.author.models import Author
 from src.domains.common.models import Base, BaseModelMixin
 from src.domains.genre.models import Genre
+from src.domains.user.models import User
+from src.domains.role.models import Role
 from src.setting import settings
 
 # this is the Alembic Config object, which provides
