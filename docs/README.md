@@ -56,3 +56,12 @@ fastapi-project
 ```
 
 ### Соглашения об именовании
+
+### Правила импортов
+
+В проекте используются абсолютные импорты
+
+``` python
+from src.domains.author.models import Author
+from src.domains.genre.models import Genre
+```
