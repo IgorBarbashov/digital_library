@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class Genre(Base, BaseModelMixin):
     __tablename__ = "genre"
 
-    name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
     author_genres: Mapped[List[AuthorGenre]] = relationship(
         "AuthorGenre", back_populates="genre"
     )
