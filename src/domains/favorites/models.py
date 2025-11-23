@@ -21,9 +21,9 @@ class Favorites(Base, BaseModelMixin):
     __table_args__ = (
         # При удалении книги или пользователя будет автоматически удалена запись из favorites
         ForeignKeyConstraint(
-            ["user_id"], 
-            ["user.id"], 
-            name="fk_favorite_user", 
+            ["user_id"],
+            ["user.id"],
+            name="fk_favorite_user",
             ondelete="CASCADE"
         ),
         ForeignKeyConstraint(
