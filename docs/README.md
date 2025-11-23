@@ -22,13 +22,7 @@ fastapi-project
 │   │   │   ├── repository.py
 │   │   │   ├── schema.py
 │   │   │   └── services.py
-│   │   ├── genre
-│   │   │   ├── api.py
-│   │   │   ├── models.py
-│   │   │   ├── protocols.py
-│   │   │   ├── repository.py
-│   │   │   ├── schema.py
-│   │   │   └── services.py
+│   │   ├── ...
 │   │   └── common
 │   │       ├── association
 │   │       │   ├── author_genre.py
@@ -43,7 +37,6 @@ fastapi-project
 │   └── setting.py
 ├── tests
 │   ├── author
-│   ├── genre
 │   └── ...
 ├── .env
 ├── .gitignore
@@ -59,7 +52,7 @@ fastapi-project
 
 - `/api/v1/init.py` - инициализация всех `API` (подключение роутеров к `app`)
 - `/db/db/py` - инициализация подключения к БД, создание и контроль работы с сессиями БД
-- `/src/<domain_name>` - содержит директории всех доменных сущностей
+- `/src/<domain_name>` - директория домена
     
     Каждая `<domain_name>` папка содержит:
     - `api.py` - контролеры (эндпоинты)
@@ -91,7 +84,7 @@ from src.domains.author.models import Author
 from src.domains.genre.models import Genre
 ```
 
-В проекте не используются файлы `__init__.py` для инициализации модулей и паттерна `PublicAPI`. Импорт должен производиться из конечного файла.
+Импорт должен производиться из конечного файла без использования `__init__.py`.
 
 ### Сборка и запуск проекта
 
