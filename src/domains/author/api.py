@@ -1,7 +1,7 @@
 import uuid
 from typing import List, Union
 
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Depends, Path, Query, status
 
 from src.domains.author.schema import AuthorSchema, AuthorWithGenreSchema
 from src.domains.author.services import AuthorService, get_author_service
@@ -20,9 +20,7 @@ async def get_all(
     limit: int = Query(100, description="Сколько элементов загружать в список"),
     with_genre: bool = Query(False, description="Загружать ли жанры"),
 ):
-    authors = await service.get_all(skip=skip, limit=limit, with_genre=with_genre)
-
-    return authors
+    return await service.get_all(skip=skip, limit=limit, with_genre=with_genre)
 
 
 @router.get(
@@ -35,6 +33,16 @@ async def get_by_id(
     id: uuid.UUID = Path(..., description="ID автора"),
     with_genre: bool = Query(False, description="Загружать ли жанры"),
 ):
-    author = await service.get_by_id(author_id=id, with_genre=with_genre)
+    return await service.get_by_id(author_id=id, with_genre=with_genre)
 
-    return author
+
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Удалить автора по id",
+)
+async def delete(
+    service: AuthorService = Depends(get_author_service),
+    id: uuid.UUID = Path(..., description="ID автора"),
+):
+    return await service.delete(id)

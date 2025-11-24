@@ -28,6 +28,14 @@ class AuthorService:
 
         return author
 
+    async def delete(self, author_id: uuid.UUID) -> bool:
+        result = await self.repo.delete(author_id)
+
+        if not result:
+            raise AuthorNotFound(author_id)
+
+        return False
+
 
 async def get_author_service(
     repo: AuthorRepository = Depends(get_author_repository),

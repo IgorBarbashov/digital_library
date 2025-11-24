@@ -22,7 +22,7 @@ class Author(Base, BaseModelMixin):
         DateTime, nullable=True, default=None
     )
     author_genres: Mapped[List[AuthorGenre]] = relationship(
-        "AuthorGenre", back_populates="author"
+        "AuthorGenre", back_populates="author", cascade="all, delete-orphan"
     )
     genres: Mapped[List["Genre"]] = relationship(
         "Genre",

@@ -16,6 +16,16 @@ class AuthorRepositoryPG(AuthorRepository):
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    async def _get_by_id_orm(
+        self, author_id: uuid.UUID, with_genre: bool
+    ) -> Optional[Author]:
+        stmt = select(Author).where(Author.id == author_id)
+        if with_genre:
+            stmt = stmt.options(selectinload(Author.genres))
+        result = await self.db.execute(stmt)
+
+        return result.scalar_one_or_none()
+
     async def get_all(
         self, skip: int, limit: int, with_genre: bool
     ) -> Union[List[AuthorSchema], List[AuthorWithGenreSchema]]:
@@ -34,11 +44,7 @@ class AuthorRepositoryPG(AuthorRepository):
     async def get_by_id(
         self, author_id: uuid.UUID, with_genre: bool
     ) -> Union[Optional[AuthorSchema], Optional[AuthorWithGenreSchema]]:
-        stmt = select(Author).where(Author.id == author_id)
-        if with_genre:
-            stmt = stmt.options(selectinload(Author.genres))
-        result = await self.db.execute(stmt)
-        author = result.scalar_one_or_none()
+        author = await self._get_by_id_orm(author_id, with_genre)
 
         if author is None:
             return None
@@ -48,6 +54,16 @@ class AuthorRepositoryPG(AuthorRepository):
             if with_genre
             else AuthorSchema.from_orm(author)
         )
+
+    async def delete(self, author_id: uuid.UUID) -> bool:
+        author = await self._get_by_id_orm(author_id, with_genre=False)
+
+        if author:
+            await self.db.delete(author)
+            await self.db.commit()
+            return True
+
+        return False
 
 
 async def get_author_repository(
