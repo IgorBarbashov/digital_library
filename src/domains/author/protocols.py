@@ -16,6 +16,10 @@ class AuthorRepository(Protocol):
 
     async def create(self, author: AuthorEntity) -> AuthorEntity: ...
 
+    async def update(
+        self, author_id: uuid.UUID, author: dict
+    ) -> Optional[AuthorEntity]: ...
+
     async def delete(self, author_id: uuid.UUID) -> bool: ...
 
     async def get_by_id_orm(

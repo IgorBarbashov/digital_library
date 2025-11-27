@@ -6,7 +6,7 @@ from pydantic import ConfigDict
 
 from src.domains.author.entity import AuthorEntity
 from src.domains.author.models import Author
-from src.domains.common.schema import BaseSchema
+from src.domains.common.schema import BaseSchema, BaseUpdateSchema
 
 
 class AuthorBaseSchema(BaseSchema):
@@ -24,7 +24,7 @@ class AuthorCreateSchema(AuthorBaseSchema):
     pass
 
 
-class AuthorUpdateSchema(BaseSchema):
+class AuthorUpdateSchema(BaseUpdateSchema):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     genres: Optional[List[uuid.UUID]] = None
@@ -38,7 +38,7 @@ class AuthorResponseSchema(AuthorBaseSchema):
 
 class AuthorMappers:
     @staticmethod
-    def dto_to_entity_create(author_create: AuthorCreateSchema) -> AuthorEntity:
+    def create_dto_to_entity(author_create: AuthorCreateSchema) -> AuthorEntity:
         return AuthorEntity(
             first_name=author_create.first_name,
             last_name=author_create.last_name,

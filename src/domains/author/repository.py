@@ -2,7 +2,7 @@ import uuid
 from typing import List, Optional
 
 from fastapi import Depends
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -52,6 +52,33 @@ class AuthorRepositoryPG(AuthorRepository):
         created_author = await self.get_by_id(author_orm.id, with_genre=True)
         assert created_author is not None
         return created_author
+
+    async def update(
+        self, author_id: uuid.UUID, author: dict
+    ) -> Optional[AuthorEntity]:
+        author_orm = await self.get_by_id_orm(author_id, with_genre=True)
+        if not author_orm:
+            return None
+
+        genres_ids = author.pop("genres", None)
+
+        for key, value in author.items():
+            setattr(author_orm, key, value)
+        await self.db.flush()
+
+        if genres_ids is not None:
+            await self.db.execute(
+                delete(AuthorGenre).where(AuthorGenre.author_id == author_id)
+            )
+
+            for genre_id in genres_ids:
+                author_genre = AuthorGenre(author_id=author_id, genre_id=genre_id)
+                self.db.add(author_genre)
+
+        await self.db.commit()
+        await self.db.refresh(author_orm)
+
+        return AuthorMappers.orm_to_entity(author_orm, with_genre=True)
 
     async def delete(self, author_id: uuid.UUID) -> bool:
         author = await self.get_by_id_orm(author_id, with_genre=False)

@@ -29,6 +29,15 @@ class AuthorService:
     async def create(self, author: AuthorEntity) -> AuthorEntity:
         return await self.repo.create(author)
 
+    async def update(self, author_id: uuid.UUID, author_data: dict) -> AuthorEntity:
+        update_data = {k: v for k, v in author_data.items() if v is not None}
+        updated_author = await self.repo.update(author_id, update_data)
+
+        if updated_author is None:
+            raise AuthorNotFound(author_id)
+
+        return updated_author
+
     async def delete(self, author_id: uuid.UUID) -> bool:
         result = await self.repo.delete(author_id)
 
