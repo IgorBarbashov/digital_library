@@ -69,3 +69,21 @@ async def create_genre(
     await session.refresh(genre)
 
     return GenreReadSchema.model_validate(genre)
+
+
+@router.delete(
+    "/{genre_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Удалить жанр по id",
+)
+async def delete_genre(
+    genre_id: uuid.UUID = Path(..., description="ID жанра"),
+    session: AsyncSession = Depends(get_async_session),
+) -> None:
+    genre = await session.get(Genre, genre_id)
+
+    if not genre:
+        raise EntityNotFound(genre_id, entity_name="genre")
+
+    await session.delete(genre)
+    await session.commit()
