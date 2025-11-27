@@ -2,11 +2,6 @@ import uuid
 
 
 class EntityNotFound(Exception):
-    def __init__(self, msg: str = "Entity not found"):
-        super().__init__(msg)
-
-
-class AuthorNotFound(EntityNotFound):
-    def __init__(self, author_id: uuid.UUID):
-        self.msg = f"Author {author_id=} not found"
+    def __init__(self, id: uuid.UUID, name: str = "entity"):
+        self.msg = f"{name.capitalize()} {id=} not found"
         super().__init__(self.msg)

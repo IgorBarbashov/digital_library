@@ -6,7 +6,7 @@ from fastapi import Depends
 from src.domains.author.protocols import AuthorRepository
 from src.domains.author.repository import get_author_repository
 from src.domains.author.schema import AuthorSchema, AuthorWithGenreSchema
-from src.exceptions.entity import AuthorNotFound
+from src.exceptions.entity import EntityNotFound
 
 
 class AuthorService:
@@ -24,7 +24,7 @@ class AuthorService:
         author = await self.repo.get_by_id(author_id=author_id, with_genre=with_genre)
 
         if author is None:
-            raise AuthorNotFound(author_id)
+            raise EntityNotFound(author_id, name="author")
 
         return author
 
