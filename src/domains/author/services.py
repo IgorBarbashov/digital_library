@@ -1,11 +1,11 @@
 import uuid
-from typing import List, Union
+from typing import List
 
 from fastapi import Depends
 
+from src.domains.author.entity import AuthorEntity
 from src.domains.author.protocols import AuthorRepository
 from src.domains.author.repository import get_author_repository
-from src.domains.author.schema import AuthorSchema, AuthorWithGenreSchema
 from src.exceptions.entity import AuthorNotFound
 
 
@@ -15,18 +15,19 @@ class AuthorService:
 
     async def get_all(
         self, skip: int, limit: int, with_genre: bool
-    ) -> Union[List[AuthorSchema], List[AuthorWithGenreSchema]]:
+    ) -> List[AuthorEntity]:
         return await self.repo.get_all(skip=skip, limit=limit, with_genre=with_genre)
 
-    async def get_by_id(
-        self, author_id: uuid.UUID, with_genre: bool
-    ) -> Union[AuthorSchema, AuthorWithGenreSchema]:
+    async def get_by_id(self, author_id: uuid.UUID, with_genre: bool) -> AuthorEntity:
         author = await self.repo.get_by_id(author_id=author_id, with_genre=with_genre)
 
         if author is None:
             raise AuthorNotFound(author_id)
 
         return author
+
+    async def create(self, author: AuthorEntity) -> AuthorEntity:
+        return await self.repo.create(author)
 
     async def delete(self, author_id: uuid.UUID) -> bool:
         result = await self.repo.delete(author_id)
