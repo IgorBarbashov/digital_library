@@ -1,14 +1,14 @@
 import uuid
 from typing import List
 
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.db import get_async_session
 from src.domains.genre.models import Genre
-from src.domains.genre.schema import GenreReadSchema
-from src.exceptions.entity import EntityNotFound
+from src.domains.genre.schema import GenreCreateSchema, GenreReadSchema
+from src.exceptions.entity import EntityAlreadyExists, EntityNotFound
 
 router = APIRouter()
 
@@ -40,6 +40,32 @@ async def get_by_id(
     genre = await session.get(Genre, genre_id)
 
     if not genre:
-        raise EntityNotFound(genre_id, name="genre")
+        raise EntityNotFound(genre_id, entity_name="genre")
+
+    return GenreReadSchema.model_validate(genre)
+
+
+@router.post(
+    "/",
+    response_model=GenreReadSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Создать жанр",
+)
+async def create_genre(
+    genre_data: GenreCreateSchema,
+    session: AsyncSession = Depends(get_async_session),
+) -> GenreReadSchema:
+    stmt = select(Genre).where(Genre.name == genre_data.name)
+    result = await session.scalars(stmt)
+    existing_genre = result.first()
+
+    if existing_genre:
+        raise EntityAlreadyExists(id=existing_genre.id, entity_name="genre")
+
+    genre = Genre(name=genre_data.name)
+    session.add(genre)
+
+    await session.commit()
+    await session.refresh(genre)
 
     return GenreReadSchema.model_validate(genre)

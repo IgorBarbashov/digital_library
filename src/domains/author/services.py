@@ -24,7 +24,7 @@ class AuthorService:
         author = await self.repo.get_by_id(author_id=author_id, with_genre=with_genre)
 
         if author is None:
-            raise EntityNotFound(author_id, name="author")
+            raise EntityNotFound(author_id, entity_name="author")
 
         return author
 
