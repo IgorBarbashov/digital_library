@@ -1,12 +1,14 @@
 import uuid
+from typing import Any
 
 
 class EntityNotFound(Exception):
-    def __init__(self, msg: str = "Entity not found"):
-        super().__init__(msg)
+    def __init__(self, id: uuid.UUID, entity_name: str = "entity"):
+        self.msg = f"{entity_name.capitalize()} {id=} not found"
+        super().__init__(self.msg)
 
 
-class AuthorNotFound(EntityNotFound):
-    def __init__(self, author_id: uuid.UUID):
-        self.msg = f"Author {author_id=} not found"
+class EntityAlreadyExists(Exception):
+    def __init__(self, filters: dict[str, Any], entity_name: str = "entity"):
+        self.msg = f"{entity_name.capitalize()} with filters {filters} already exists"
         super().__init__(self.msg)

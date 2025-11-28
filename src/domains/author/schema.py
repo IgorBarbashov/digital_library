@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import ConfigDict
 
 from src.domains.common.schema import BaseSchema
-from src.domains.genre.schema import GenreSchema
+from src.domains.genre.schema import GenreBaseSchema
 
 
 class AuthorSchema(BaseSchema):
@@ -16,6 +16,6 @@ class AuthorSchema(BaseSchema):
 
 
 class AuthorWithGenreSchema(AuthorSchema):
-    genres: List[GenreSchema] = []
+    genres: List[GenreBaseSchema] = []
 
     model_config = ConfigDict(from_attributes=True)
