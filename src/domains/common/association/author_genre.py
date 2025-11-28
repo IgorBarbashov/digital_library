@@ -18,10 +18,14 @@ class AuthorGenre(Base, BaseModelMixin):
     __tablename__ = "author_genre"
 
     author_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("author.id"), primary_key=True
+        PG_UUID(as_uuid=True),
+        ForeignKey("author.id", ondelete="CASCADE"),
+        primary_key=True,
     )
     genre_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("genre.id"), primary_key=True
+        PG_UUID(as_uuid=True),
+        ForeignKey("genre.id", ondelete="CASCADE"),
+        primary_key=True,
     )
 
     author: Mapped["Author"] = relationship("Author", back_populates="author_genres")
