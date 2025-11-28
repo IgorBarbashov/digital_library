@@ -2,7 +2,8 @@ import uuid
 from typing import List
 
 from fastapi import APIRouter, Depends, Path, status
-from sqlalchemy import select
+from sqlalchemy import delete, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.db import get_async_session
@@ -59,47 +60,46 @@ async def create_genre(
     genre_data: GenreCreateSchema,
     session: AsyncSession = Depends(get_async_session),
 ) -> GenreReadSchema:
-    stmt = select(Genre).where(Genre.name == genre_data.name)
-    result = await session.scalars(stmt)
-    existing_genre = result.first()
-
-    if existing_genre:
-        raise EntityAlreadyExists(id=existing_genre.id, entity_name="genre")
-
     genre = Genre(name=genre_data.name)
     session.add(genre)
 
-    await session.commit()
-    await session.refresh(genre)
+    try:
+        await session.commit()
+        return GenreReadSchema.model_validate(genre)
 
-    return GenreReadSchema.model_validate(genre)
+    except IntegrityError as err:
+        await session.rollback()
+
+        if "UNIQUE" in str(err.orig):
+            raise EntityAlreadyExists(name=genre_data.name, entity_name="genre")
+
+        raise
 
 
-@router.put(
+@router.patch(
     "/{genre_id}",
     response_model=GenreReadSchema,
-    summary="Обновить жанр",
+    summary="Частичное обновление жанра",
 )
-async def update_genre(
+async def patch_genre(
     genre_data: GenreUpdateSchema,
     genre_id: uuid.UUID = Path(..., description="ID жанра"),
     session: AsyncSession = Depends(get_async_session),
 ) -> GenreReadSchema:
-    genre = await session.get(Genre, genre_id)
-
-    if not genre:
-        EntityNotFound(genre_id, "genre")
-
     update_data = genre_data.model_dump(exclude_unset=True)
 
-    for k, v in update_data.items():
-        setattr(genre, k, v)
+    stmt = (
+        update(Genre).where(Genre.id == genre_id).values(**update_data).returning(Genre)
+    )
+    result = await session.execute(stmt)
+    updated_genre = result.scalar_one_or_none()
 
-    session.add(genre)
+    if updated_genre is None:
+        raise EntityNotFound(genre_id, entity_name="genre")
+
     await session.commit()
-    await session.refresh(genre)
 
-    return GenreReadSchema.model_validate(genre)
+    return GenreReadSchema.model_validate(updated_genre)
 
 
 @router.delete(
@@ -111,10 +111,11 @@ async def delete_genre(
     genre_id: uuid.UUID = Path(..., description="ID жанра"),
     session: AsyncSession = Depends(get_async_session),
 ) -> None:
-    genre = await session.get(Genre, genre_id)
+    stmt = delete(Genre).where(Genre.id == genre_id).returning(Genre.id)
+    result = await session.execute(stmt)
+    deleted_ids = [row[0] for row in result]
 
-    if not genre:
+    if not deleted_ids:
         raise EntityNotFound(genre_id, entity_name="genre")
 
-    await session.delete(genre)
     await session.commit()
