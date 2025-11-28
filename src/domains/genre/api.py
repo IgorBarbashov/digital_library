@@ -71,7 +71,7 @@ async def create_genre(
         await session.rollback()
 
         if "UNIQUE" in str(err.orig):
-            raise EntityAlreadyExists(name=genre_data.name, entity_name="genre")
+            raise EntityAlreadyExists({"name": genre_data.name}, entity_name="genre")
 
         raise
 

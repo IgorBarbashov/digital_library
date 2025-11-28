@@ -1,4 +1,5 @@
 import uuid
+from typing import Any
 
 
 class EntityNotFound(Exception):
@@ -8,6 +9,6 @@ class EntityNotFound(Exception):
 
 
 class EntityAlreadyExists(Exception):
-    def __init__(self, name: str, entity_name: str = "entity"):
-        self.msg = f"{entity_name.capitalize()} with {name=} already exists"
+    def __init__(self, filters: dict[str, Any], entity_name: str = "entity"):
+        self.msg = f"{entity_name.capitalize()} with filters {filters} already exists"
         super().__init__(self.msg)
