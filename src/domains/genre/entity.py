@@ -1,2 +1,0 @@
-class GenreEntity:
-    name: str

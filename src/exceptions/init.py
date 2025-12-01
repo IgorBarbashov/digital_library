@@ -1,7 +1,11 @@
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
-from src.exceptions.entity import EntityAlreadyExists, EntityNotFound, NoDataToUpdate
+from src.exceptions.entity import (
+    EntityAlreadyExists,
+    EntityNotFound,
+    NoDataToUpdateEntityError,
+)
 
 
 def init_exception_handlers(app: FastAPI):
@@ -19,8 +23,8 @@ def init_exception_handlers(app: FastAPI):
             content={"message": exc.message},
         )
 
-    @app.exception_handler(NoDataToUpdate)
-    def no_data_to_update_handler(request, exc) -> JSONResponse:
+    @app.exception_handler(NoDataToUpdateEntityError)
+    def no_data_to_update_entity_handler(request, exc) -> JSONResponse:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"message": exc.message},

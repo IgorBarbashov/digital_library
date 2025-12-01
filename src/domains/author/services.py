@@ -34,7 +34,7 @@ class AuthorService:
         updated_author = await self.repo.update(author_id, update_data)
 
         if updated_author is None:
-            raise AuthorNotFound(author_id)
+            raise EntityNotFound({"id": author_id}, entity_name="author")
 
         return updated_author
 
@@ -42,7 +42,7 @@ class AuthorService:
         result = await self.repo.delete(author_id)
 
         if not result:
-            raise AuthorNotFound(author_id)
+            raise EntityNotFound({"id": author_id}, entity_name="author")
 
         return False
 
