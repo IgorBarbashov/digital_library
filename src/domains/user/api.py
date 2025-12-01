@@ -9,8 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.db.db import get_async_session
-from src.domains.role.utils import get_role_orm_by_name
+from src.domains.role.repository import get_role_orm_by_name
 from src.domains.user.models import User
+from src.domains.user.repository import get_user_orm_by_id
 from src.domains.user.schema import (
     AssignUserRoleSchema,
     SetUserPasswordSchema,
@@ -19,7 +20,6 @@ from src.domains.user.schema import (
     UserReadSchema,
     UserUpdateSchema,
 )
-from src.domains.user.utils import get_user_orm_by_id
 from src.exceptions.entity import EntityAlreadyExists, EntityNotFound
 
 router = APIRouter()
@@ -66,7 +66,7 @@ async def create_user(
     try:
         role = await get_role_orm_by_name(session, user_data.role)
         user = User(
-            **user_data.model_dump(by_alias=True, exclude={"role"}),
+            **user_data.to_orm_dict(),
             role=role,
         )
 
@@ -175,7 +175,7 @@ async def set_user_password(
     stmt = (
         update(User)
         .where(User.id == user_id)
-        .values({"hashed_password": user_data.password})
+        .values({"hashed_password": user_data.password.get_secret_value()})
     )
     result = await session.execute(stmt)
     cursor_result = cast(CursorResult, result)
