@@ -14,7 +14,7 @@ class GenreCreateSchema(GenreBaseSchema):
     pass
 
 
-class GenreUpdateSchema(BaseSchema):
+class GenrePatchSchema(BaseSchema):
     name: Optional[str] = None
 
 
