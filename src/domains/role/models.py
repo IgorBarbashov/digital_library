@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, List
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.constants.user_role import UserRole
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
@@ -14,5 +15,5 @@ if TYPE_CHECKING:
 class Role(Base, BaseModelMixin):
     __tablename__ = "role"
 
-    name: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
+    name: Mapped[UserRole] = mapped_column(String(30), nullable=False, unique=True)
     users: Mapped[List["User"]] = relationship("User", back_populates="role")
