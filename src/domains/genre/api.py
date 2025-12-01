@@ -10,8 +10,8 @@ from src.db.db import get_async_session
 from src.domains.genre.models import Genre
 from src.domains.genre.schema import (
     GenreCreateSchema,
+    GenrePatchSchema,
     GenreReadSchema,
-    GenreUpdateSchema,
 )
 from src.exceptions.entity import EntityAlreadyExists, EntityNotFound
 
@@ -44,8 +44,8 @@ async def get_by_id(
 ) -> GenreReadSchema:
     genre = await session.get(Genre, genre_id)
 
-    if not genre:
-        raise EntityNotFound(genre_id, entity_name="genre")
+    if genre is None:
+        raise EntityNotFound({"id": genre_id}, entity_name="genre")
 
     return GenreReadSchema.model_validate(genre)
 
@@ -82,7 +82,7 @@ async def create_genre(
     summary="Частичное обновление жанра",
 )
 async def patch_genre(
-    genre_data: GenreUpdateSchema,
+    genre_data: GenrePatchSchema,
     genre_id: uuid.UUID = Path(..., description="ID жанра"),
     session: AsyncSession = Depends(get_async_session),
 ) -> GenreReadSchema:
@@ -95,7 +95,7 @@ async def patch_genre(
     updated_genre = result.scalar_one_or_none()
 
     if updated_genre is None:
-        raise EntityNotFound(genre_id, entity_name="genre")
+        raise EntityNotFound({"id": genre_id}, entity_name="genre")
 
     await session.commit()
 
@@ -116,6 +116,6 @@ async def delete_genre(
     deleted_ids = [row[0] for row in result]
 
     if not deleted_ids:
-        raise EntityNotFound(genre_id, entity_name="genre")
+        raise EntityNotFound({"id": genre_id}, entity_name="genre")
 
     await session.commit()
