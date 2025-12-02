@@ -6,7 +6,7 @@ from typing import Any, Dict, Optional
 from pydantic import AliasPath, ConfigDict, EmailStr, Field, SecretStr
 
 from src.constants.user_role import UserRole
-from src.domains.common.schema import BaseSchema
+from src.domains.common.schema import BasePatchSchema, BaseSchema
 from src.domains.user.models import User
 
 
@@ -37,7 +37,7 @@ class UserCreateSchema(UserBaseSchema):
         return data
 
 
-class UserPatchSchema(BaseSchema):
+class UserPatchSchema(BasePatchSchema):
     username: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None

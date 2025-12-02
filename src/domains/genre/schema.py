@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import ConfigDict
 
-from src.domains.common.schema import BaseSchema
+from src.domains.common.schema import BasePatchSchema, BaseSchema
 
 
 class GenreBaseSchema(BaseSchema):
@@ -14,7 +14,7 @@ class GenreCreateSchema(GenreBaseSchema):
     pass
 
 
-class GenrePatchSchema(BaseSchema):
+class GenrePatchSchema(BasePatchSchema):
     name: Optional[str] = None
 
 

@@ -13,6 +13,7 @@ class EntityAlreadyExists(Exception):
         super().__init__(self.msg)
 
 
-class NoDataToUpdateEntityError(Exception):
-    def __init__(self, msg: str = "No data to update"):
-        super().__init__(msg)
+class NoDataToPatchEntity(Exception):
+    def __init__(self, entity_name: str = "entity"):
+        self.msg = f"No data to patch {entity_name.capitalize()}"
+        super().__init__(self.msg)

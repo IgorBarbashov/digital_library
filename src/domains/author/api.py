@@ -1,77 +1,118 @@
 import uuid
-from typing import List
+from typing import List, cast
 
 from fastapi import APIRouter, Depends, Path, Query, status
+from sqlalchemy import CursorResult, delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
+from src.db.db import get_async_session
+from src.domains.author.models import Author
+from src.domains.author.repository import get_author_orm_by_id
 from src.domains.author.schema import (
     AuthorCreateSchema,
-    AuthorMappers,
-    AuthorResponseSchema,
-    AuthorUpdateSchema,
+    AuthorPatchSchema,
+    AuthorReadSchema,
 )
-from src.domains.author.services import AuthorService, get_author_service
+from src.domains.common.association.author_genre import AuthorGenre
+from src.exceptions.entity import EntityNotFound
 
 router = APIRouter()
 
 
 @router.get(
     "/",
-    response_model=List[AuthorResponseSchema],
+    response_model=List[AuthorReadSchema],
     summary="Получить список авторов",
 )
 async def get_all(
-    skip: int = Query(0, description="Смещение относительно первого элемента в списке"),
-    limit: int = Query(100, description="Сколько элементов загружать в список"),
     with_genre: bool = Query(False, description="Загружать ли жанры"),
-    service: AuthorService = Depends(get_author_service),
-):
-    authors = await service.get_all(skip=skip, limit=limit, with_genre=with_genre)
-    return AuthorMappers.entity_to_response_list(authors)
+    session: AsyncSession = Depends(get_async_session),
+) -> List[AuthorReadSchema]:
+    stmt = select(Author).order_by(Author.create_at.asc())
+    if with_genre:
+        stmt = stmt.options(selectinload(Author.genres))
+    result = await session.execute(stmt)
+    authors = result.scalars().all()
+
+    return [
+        AuthorReadSchema.from_orm_with_genres(author, with_genre) for author in authors
+    ]
 
 
 @router.get(
     "/{author_id}",
-    response_model=AuthorResponseSchema,
+    response_model=AuthorReadSchema,
     summary="Получить автора по id",
 )
 async def get_by_id(
     author_id: uuid.UUID = Path(..., description="ID автора"),
     with_genre: bool = Query(False, description="Загружать ли жанры"),
-    service: AuthorService = Depends(get_author_service),
-):
-    author = await service.get_by_id(author_id=author_id, with_genre=with_genre)
-    return AuthorMappers.entity_to_response(author)
+    session: AsyncSession = Depends(get_async_session),
+) -> AuthorReadSchema:
+    author = await get_author_orm_by_id(session, author_id, with_genre)
+    return AuthorReadSchema.from_orm_with_genres(author, with_genre)
 
 
 @router.post(
     "/",
-    response_model=AuthorResponseSchema,
+    response_model=AuthorReadSchema,
     status_code=status.HTTP_201_CREATED,
     summary="Создать автора",
 )
-async def create(
+async def create_author(
     author_data: AuthorCreateSchema,
-    service: AuthorService = Depends(get_author_service),
-):
-    author = AuthorMappers.create_dto_to_entity(author_data)
-    created_author = await service.create(author)
-    return AuthorMappers.entity_to_response(created_author)
+    session: AsyncSession = Depends(get_async_session),
+) -> AuthorReadSchema:
+    author = Author(**author_data.model_dump(exclude={"genres"}))
+    session.add(author)
+    await session.flush()
+
+    for genre_id in author_data.genres:
+        author_genre = AuthorGenre(author_id=author.id, genre_id=genre_id)
+        session.add(author_genre)
+
+    await session.commit()
+
+    created_author = await get_author_orm_by_id(session, author.id, with_genre=True)
+    return AuthorReadSchema.from_orm_with_genres(created_author, with_genre=True)
 
 
-@router.put(
+@router.patch(
     "/{author_id}",
-    response_model=AuthorResponseSchema,
-    summary="Обновить автора",
+    response_model=AuthorReadSchema,
+    summary="Частичное обновление автора",
 )
-async def update(
-    author_data: AuthorUpdateSchema,
+async def patch_author(
+    author_data: AuthorPatchSchema,
     author_id: uuid.UUID = Path(..., description="ID автора"),
-    service: AuthorService = Depends(get_author_service),
-):
-    updated_author = await service.update(
-        author_id, author_data.model_dump(exclude_unset=True)
-    )
-    return AuthorMappers.entity_to_response(updated_author)
+    session: AsyncSession = Depends(get_async_session),
+) -> AuthorReadSchema:
+    update_data = author_data.model_dump(exclude_unset=True)
+    genres_ids = update_data.pop("genres", None)
+
+    stmt = update(Author).where(Author.id == author_id).values(**update_data)
+    result = await session.execute(stmt)
+    cursor_result = cast(CursorResult, result)
+
+    if cursor_result.rowcount == 0:
+        raise EntityNotFound({"id": author_id}, entity_name="author")
+
+    await session.flush()
+
+    if genres_ids is not None:
+        await session.execute(
+            delete(AuthorGenre).where(AuthorGenre.author_id == author_id)
+        )
+
+        for genre_id in genres_ids:
+            author_genre = AuthorGenre(author_id=author_id, genre_id=genre_id)
+            session.add(author_genre)
+
+    await session.commit()
+
+    updated_author = await get_author_orm_by_id(session, author_id, with_genre=True)
+    return AuthorReadSchema.from_orm_with_genres(updated_author, with_genre=True)
 
 
 @router.delete(
@@ -79,8 +120,15 @@ async def update(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Удалить автора по id",
 )
-async def delete(
+async def delete_author(
     author_id: uuid.UUID = Path(..., description="ID автора"),
-    service: AuthorService = Depends(get_author_service),
-):
-    return await service.delete(author_id)
+    session: AsyncSession = Depends(get_async_session),
+) -> None:
+    stmt = delete(Author).where(Author.id == author_id).returning(Author.id)
+    result = await session.execute(stmt)
+    deleted_ids = [row[0] for row in result]
+
+    if not deleted_ids:
+        raise EntityNotFound({"id": author_id}, entity_name="author")
+
+    await session.commit()
