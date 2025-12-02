@@ -46,7 +46,7 @@ def upgrade() -> None:
     sa.Column('update_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['author_id'], ['author.id'], ),
     sa.ForeignKeyConstraint(['genre_id'], ['genre.id'], ),
-    sa.PrimaryKeyConstraint('author_id', 'genre_id', 'id')
+    sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
 
