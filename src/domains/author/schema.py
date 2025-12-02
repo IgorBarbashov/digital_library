@@ -1,21 +1,43 @@
+from __future__ import annotations
+
+import uuid
 from datetime import date
 from typing import List, Optional
 
 from pydantic import ConfigDict
 
-from src.domains.common.schema import BaseSchema
-from src.domains.genre.schema import GenreSchema
+from src.domains.author.models import Author
+from src.domains.common.schema import BasePatchSchema, BaseSchema
 
 
-class AuthorSchema(BaseSchema):
+class AuthorBaseSchema(BaseSchema):
     first_name: str
     last_name: str
-    birth_date: Optional[date]
+    genres: List[uuid.UUID]
+    birth_date: Optional[date] = None
+
+
+class AuthorCreateSchema(AuthorBaseSchema):
+    pass
+
+
+class AuthorPatchSchema(BasePatchSchema):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    genres: Optional[List[uuid.UUID]] = None
+    birth_date: Optional[date] = None
+
+
+class AuthorReadSchema(AuthorBaseSchema):
+    id: uuid.UUID
 
     model_config = ConfigDict(from_attributes=True)
 
+    @classmethod
+    def from_orm_with_genres(cls, obj: Author, with_genre: bool) -> AuthorReadSchema:
+        genre_ids = (
+            [genre.id for genre in obj.genres] if with_genre and obj.genres else []
+        )
+        author_data = {**obj.__dict__, "genres": genre_ids}
 
-class AuthorWithGenreSchema(AuthorSchema):
-    genres: List[GenreSchema] = []
-
-    model_config = ConfigDict(from_attributes=True)
+        return cls.model_validate(author_data)

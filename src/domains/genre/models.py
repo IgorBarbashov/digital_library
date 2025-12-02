@@ -17,7 +17,7 @@ class Genre(Base, BaseModelMixin):
 
     name: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
     author_genres: Mapped[List[AuthorGenre]] = relationship(
-        "AuthorGenre", back_populates="genre"
+        "AuthorGenre", back_populates="genre", cascade="all, delete-orphan"
     )
     authors: Mapped[List["Author"]] = relationship(
         "Author",

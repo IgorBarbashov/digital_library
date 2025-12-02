@@ -1,14 +1,15 @@
-import uuid
-from datetime import datetime
+from pydantic import BaseModel, model_validator
 
-from pydantic import BaseModel
+from src.exceptions.entity import NoDataToPatchEntity
 
 
-class Base(BaseModel):
+class BaseSchema(BaseModel):
     pass
 
 
-class BaseSchema(Base):
-    id: uuid.UUID
-    create_at: datetime
-    update_at: datetime
+class BasePatchSchema(BaseSchema):
+    @model_validator(mode="before")
+    def check_at_least_one(cls, values):
+        if not values or all(v is None for v in values.values()):
+            raise NoDataToPatchEntity()
+        return values
