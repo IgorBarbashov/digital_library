@@ -6,10 +6,11 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.auth.schema import TokenDataSchema
+from src.constants.user_role import UserRole
 from src.db.db import get_async_session
 from src.domains.user.repository import get_user_orm_by_username
 from src.domains.user.schema import UserReadSchema
-from src.exceptions.auth import BadCredentials
+from src.exceptions.auth import AdminRoleRequired, BadCredentials, InactiveUser
 from src.setting import settings
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -40,3 +41,21 @@ async def get_current_user(
 
     except jwt.InvalidTokenError:
         raise BadCredentials()
+
+
+async def get_current_active_user(
+    current_user: Annotated[UserReadSchema, Depends(get_current_user)],
+) -> UserReadSchema:
+    if current_user.disabled:
+        raise InactiveUser()
+
+    return current_user
+
+
+async def get_current_active_admin(
+    current_user: Annotated[UserReadSchema, Depends(get_current_active_user)],
+) -> UserReadSchema:
+    if current_user.role != UserRole.ADMIN:
+        raise AdminRoleRequired()
+
+    return current_user

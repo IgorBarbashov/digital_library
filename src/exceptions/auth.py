@@ -14,3 +14,9 @@ class IncorrectUsernamePassword(Exception):
     def __init__(self):
         self.msg = "Incorrect username or password"
         super().__init__(self.msg)
+
+
+class AdminRoleRequired(Exception):
+    def __init__(self):
+        self.msg = "Admin role required"
+        super().__init__(self.msg)

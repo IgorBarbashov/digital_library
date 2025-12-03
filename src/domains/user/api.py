@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.auth.guards import get_current_user
+from src.auth.guards import get_current_active_admin, get_current_active_user
 from src.auth.utils import get_password_hash
 from src.db.db import get_async_session
 from src.domains.role.repository import get_role_orm_by_name
@@ -48,7 +48,7 @@ async def get_all(
     summary="Получить информацию по текущему пользователю",
 )
 async def get_me(
-    current_user: Annotated[UserReadSchema, Depends(get_current_user)],
+    current_user: Annotated[UserReadSchema, Depends(get_current_active_user)],
 ) -> UserReadSchema:
     return current_user
 
@@ -74,6 +74,7 @@ async def get_by_id(
 )
 async def create_user(
     user_data: UserCreateSchema,
+    _: Annotated[UserReadSchema, Depends(get_current_active_admin)],
     session: AsyncSession = Depends(get_async_session),
 ) -> UserReadSchema:
     try:

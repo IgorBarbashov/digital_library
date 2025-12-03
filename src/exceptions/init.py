@@ -1,7 +1,12 @@
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 
-from src.exceptions.auth import BadCredentials, InactiveUser, IncorrectUsernamePassword
+from src.exceptions.auth import (
+    AdminRoleRequired,
+    BadCredentials,
+    InactiveUser,
+    IncorrectUsernamePassword,
+)
 from src.exceptions.entity import (
     EntityAlreadyExists,
     EntityNotFound,
@@ -45,4 +50,11 @@ def init_exception_handlers(app: FastAPI):
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={"message": exc.message},
             headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    @app.exception_handler(AdminRoleRequired)
+    def admin_role_required_handler(request, exc) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={"message": exc.message},
         )
