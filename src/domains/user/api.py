@@ -16,7 +16,6 @@ from src.domains.user.models import User
 from src.domains.user.repository import get_user_orm_by_id
 from src.domains.user.schema import (
     AssignUserRoleSchema,
-    SetUserPasswordSchema,
     UserCreateSchema,
     UserPatchSchema,
     UserReadSchema,
@@ -175,28 +174,4 @@ async def assign_role_to_user(
 
     user.role_id = role_id
     session.add(user)
-    await session.commit()
-
-
-@router.post(
-    "/{user_id}/set-password",
-    status_code=status.HTTP_200_OK,
-    summary="Установить пароль пользователю",
-)
-async def set_user_password(
-    user_id: uuid.UUID,
-    user_data: SetUserPasswordSchema,
-    session: AsyncSession = Depends(get_async_session),
-) -> None:
-    stmt = (
-        update(User)
-        .where(User.id == user_id)
-        .values({"hashed_password": user_data.password.get_secret_value()})
-    )
-    result = await session.execute(stmt)
-    cursor_result = cast(CursorResult, result)
-
-    if cursor_result.rowcount == 0:
-        raise EntityNotFound({"id": user_id}, entity_name="user")
-
     await session.commit()

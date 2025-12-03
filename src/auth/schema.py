@@ -1,10 +1,16 @@
-from pydantic import BaseModel
+from pydantic import SecretStr
+
+from src.domains.common.schema import BaseSchema
 
 
-class TokenReadSchema(BaseModel):
+class TokenReadSchema(BaseSchema):
     access_token: str
     token_type: str
 
 
-class TokenDataSchema(BaseModel):
+class TokenDataSchema(BaseSchema):
     username: str
+
+
+class SetPasswordSchema(BaseSchema):
+    password: SecretStr

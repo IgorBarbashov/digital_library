@@ -60,7 +60,3 @@ class UserWithPasswordReadSchema(UserReadSchema):
 
 class AssignUserRoleSchema(BaseSchema):
     role: UserRole
-
-
-class SetUserPasswordSchema(BaseSchema):
-    password: SecretStr
