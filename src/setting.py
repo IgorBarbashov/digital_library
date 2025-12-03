@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     # Auth
     jwt_secret_key: str = Field(
-        "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7",
+        "cd2e3243103c310c3b56d18c549dffd9b9f16f9b2e6041007f583bc29d635e13",
         alias="JWT_SECRET_KEY",
     )
     jwt_algorithm: str = Field("HS256", alias="JWT_ALGORITHM")
