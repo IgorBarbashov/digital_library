@@ -65,6 +65,13 @@ class UserReadSchema(UserBaseSchema):
         )
 
 
+class UserWithPasswordReadSchema(UserBaseSchema):
+    id: uuid.UUID
+    hashed_password: SecretStr
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class AssignUserRoleSchema(BaseSchema):
     role: UserRole
 

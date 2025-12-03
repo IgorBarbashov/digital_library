@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from src.auth.api import router as auth_router
 from src.domains.author.api import router as author_router
 from src.domains.genre.api import router as genre_router
 from src.domains.user.api import router as user_router
@@ -10,6 +11,7 @@ routers = {
     "author": ["/author", author_router],
     "genre": ["/genre", genre_router],
     "user": ["/user", user_router],
+    "auth": ["/auth", auth_router],
 }
 
 
