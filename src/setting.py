@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     # URLs
     api_base_prefix: str = Field("/api/v1")
     auth_prefix: str = Field("/auth")
-    get_token_slug: str = Field("/token")
+    get_token_slug: str = Field("/login")
 
     model_config = SettingsConfigDict(
         env_file=".env",

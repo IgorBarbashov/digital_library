@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/token",
+    settings.get_token_slug,
     response_model=TokenReadSchema,
     summary="Получить токен пользователя",
 )
