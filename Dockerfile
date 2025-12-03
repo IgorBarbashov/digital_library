@@ -3,7 +3,7 @@ ARG PYTHON_VERSION=3.14-slim
 FROM python:${PYTHON_VERSION}
 
 # build args
-ARG POETRY_VERSION=1.8.3
+ARG POETRY_VERSION=2.2.0
 ENV POETRY_VERSION=${POETRY_VERSION}
 
 # create app user
@@ -27,9 +27,9 @@ RUN python -m pip install --upgrade pip \
 # export and install dependencies using poetry
 ARG INSTALL_DEV=false
 RUN if [ "$INSTALL_DEV" = "true" ]; then \
-            poetry install --no-interaction --no-ansi --with dev; \
+            poetry install --no-interaction --no-ansi --with dev --no-root; \
         else \
-            poetry install --no-interaction --no-ansi --no-dev; \
+            poetry install --no-interaction --no-ansi --without dev --no-root; \
         fi
 
 # copy application code
