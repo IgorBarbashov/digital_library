@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from src.auth.utils import get_password_hash
 from src.db.db import get_async_session
 from src.domains.role.repository import get_role_orm_by_name
 from src.domains.user.models import User
@@ -65,9 +66,11 @@ async def create_user(
 ) -> UserReadSchema:
     try:
         role = await get_role_orm_by_name(session, user_data.role)
+        hashed_password = get_password_hash(user_data.password.get_secret_value())
         user = User(
             **user_data.to_orm_dict(),
             role=role,
+            hashed_password=hashed_password,
         )
 
         session.add(user)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import Any, Dict, Optional
 
-from pydantic import AliasPath, ConfigDict, EmailStr, Field, SecretStr
+from pydantic import ConfigDict, EmailStr, SecretStr
 
 from src.constants.user_role import UserRole
 from src.domains.common.schema import BasePatchSchema, BaseSchema
@@ -19,22 +19,11 @@ class UserBaseSchema(BaseSchema):
 
 
 class UserCreateSchema(UserBaseSchema):
-    password: SecretStr = Field(validation_alias=AliasPath("hashed_password"))
+    password: SecretStr
     role: UserRole
 
-    model_config = ConfigDict(
-        alias_generator=lambda x: x.replace("password", "hashed_password"),
-        populate_by_name=True,
-    )
-
     def to_orm_dict(self) -> Dict[str, Any]:
-        data = self.model_dump(by_alias=True, exclude={"role"})
-        password = data.get("hashed_password")
-
-        if isinstance(password, SecretStr):
-            data["hashed_password"] = password.get_secret_value()
-
-        return data
+        return self.model_dump(exclude={"role", "password"})
 
 
 class UserPatchSchema(BasePatchSchema):
