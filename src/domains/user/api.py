@@ -1,5 +1,5 @@
 import uuid
-from typing import List, cast
+from typing import Annotated, List, cast
 
 from fastapi import APIRouter, Depends, Path, status
 from sqlalchemy import delete, select, update
@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from src.auth.guards import get_current_user
 from src.auth.utils import get_password_hash
 from src.db.db import get_async_session
 from src.domains.role.repository import get_role_orm_by_name
@@ -39,6 +40,17 @@ async def get_all(
     users = result.scalars().all()
 
     return [UserReadSchema.from_orm(user) for user in users]
+
+
+@router.get(
+    "/me",
+    response_model=UserReadSchema,
+    summary="Получить информацию по текущему пользователю",
+)
+async def get_me(
+    current_user: Annotated[UserReadSchema, Depends(get_current_user)],
+) -> UserReadSchema:
+    return current_user
 
 
 @router.get(

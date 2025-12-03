@@ -21,12 +21,13 @@ class Settings(BaseSettings):
         alias="JWT_SECRET_KEY",
     )
     jwt_algorithm: str = Field("HS256", alias="JWT_ALGORITHM")
-    access_token_type = "bearer"
+    access_token_type: str = "bearer"
     access_token_expire_minutes: int = Field(30, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
 
     # URLs
     api_base_prefix: str = Field("/api/v1")
     auth_prefix: str = Field("/auth")
+    get_token_slug: str = Field("/token")
 
     model_config = SettingsConfigDict(
         env_file=".env",
