@@ -26,21 +26,20 @@ async def get_current_user(
         payload = jwt.decode(
             token, settings.jwt_secret_key, algorithms=settings.jwt_algorithm
         )
-        username = payload.get("username")
-
-        if username is None:
-            raise BadCredentials()
-
-        token_data = TokenDataSchema(username=username)
-        user = await get_user_orm_by_username(session, username=token_data.username)
-
-        if user is None:
-            raise BadCredentials()
-
-        return UserReadSchema.from_orm(user)
-
     except jwt.InvalidTokenError:
         raise BadCredentials()
+
+    username = payload.get("username")
+    if username is None:
+        raise BadCredentials()
+
+    token_data = TokenDataSchema(username=username)
+    user = await get_user_orm_by_username(session, username=token_data.username)
+
+    if user is None:
+        raise BadCredentials()
+
+    return UserReadSchema.from_orm(user)
 
 
 async def get_current_active_user(
