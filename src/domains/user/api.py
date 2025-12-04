@@ -1,5 +1,5 @@
 import uuid
-from typing import List, cast
+from typing import Annotated, List, cast
 
 from fastapi import APIRouter, Depends, Path, status
 from sqlalchemy import delete, select, update
@@ -8,13 +8,14 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from src.auth.guards import get_current_active_user
+from src.auth.utils import get_password_hash
 from src.db.db import get_async_session
 from src.domains.role.repository import get_role_orm_by_name
 from src.domains.user.models import User
 from src.domains.user.repository import get_user_orm_by_id
 from src.domains.user.schema import (
     AssignUserRoleSchema,
-    SetUserPasswordSchema,
     UserCreateSchema,
     UserPatchSchema,
     UserReadSchema,
@@ -38,6 +39,17 @@ async def get_all(
     users = result.scalars().all()
 
     return [UserReadSchema.from_orm(user) for user in users]
+
+
+@router.get(
+    "/me",
+    response_model=UserReadSchema,
+    summary="Получить информацию по текущему пользователю",
+)
+async def get_me(
+    current_user: Annotated[UserReadSchema, Depends(get_current_active_user)],
+) -> UserReadSchema:
+    return current_user
 
 
 @router.get(
@@ -65,9 +77,11 @@ async def create_user(
 ) -> UserReadSchema:
     try:
         role = await get_role_orm_by_name(session, user_data.role)
+        hashed_password = get_password_hash(user_data.password.get_secret_value())
         user = User(
             **user_data.to_orm_dict(),
             role=role,
+            hashed_password=hashed_password,
         )
 
         session.add(user)
@@ -159,28 +173,4 @@ async def assign_role_to_user(
 
     user.role_id = role_id
     session.add(user)
-    await session.commit()
-
-
-@router.post(
-    "/{user_id}/set-password",
-    status_code=status.HTTP_200_OK,
-    summary="Установить пароль пользователю",
-)
-async def set_user_password(
-    user_id: uuid.UUID,
-    user_data: SetUserPasswordSchema,
-    session: AsyncSession = Depends(get_async_session),
-) -> None:
-    stmt = (
-        update(User)
-        .where(User.id == user_id)
-        .values({"hashed_password": user_data.password.get_secret_value()})
-    )
-    result = await session.execute(stmt)
-    cursor_result = cast(CursorResult, result)
-
-    if cursor_result.rowcount == 0:
-        raise EntityNotFound({"id": user_id}, entity_name="user")
-
     await session.commit()
