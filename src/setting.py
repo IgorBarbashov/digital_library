@@ -15,6 +15,20 @@ class Settings(BaseSettings):
     # App
     port: int = Field(8000, alias="PORT")
 
+    # Auth
+    jwt_secret_key: str = Field(
+        "cd2e3243103c310c3b56d18c549dffd9b9f16f9b2e6041007f583bc29d635e13",
+        alias="JWT_SECRET_KEY",
+    )
+    jwt_algorithm: str = Field("HS256", alias="JWT_ALGORITHM")
+    access_token_type: str = "bearer"
+    access_token_expire_minutes: int = Field(30, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
+
+    # URLs
+    api_base_prefix: str = Field("/api/v1")
+    auth_prefix: str = Field("/auth")
+    get_token_slug: str = Field("/login")
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

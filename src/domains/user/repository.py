@@ -17,3 +17,16 @@ async def get_user_orm_by_id(session: AsyncSession, user_id: uuid.UUID) -> User:
         raise EntityNotFound({"id": user_id}, entity_name="user")
 
     return user
+
+
+async def get_user_orm_by_username(session: AsyncSession, username: str) -> User:
+    stmt = (
+        select(User).options(selectinload(User.role)).where(User.username == username)
+    )
+    result = await session.execute(stmt)
+    user = result.scalar_one_or_none()
+
+    if user is None:
+        raise EntityNotFound({"username": username}, entity_name="user")
+
+    return user
