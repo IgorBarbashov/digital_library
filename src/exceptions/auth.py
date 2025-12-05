@@ -1,22 +1,22 @@
 class InactiveUser(Exception):
     def __init__(self):
-        self.msg = "Inactive user"
-        super().__init__(self.msg)
+        self.message = "Inactive user"
+        super().__init__(self.message)
 
 
 class BadCredentials(Exception):
     def __init__(self):
-        self.msg = "Could not validate credentials"
-        super().__init__(self.msg)
+        self.message = "Could not validate credentials"
+        super().__init__(self.message)
 
 
 class IncorrectUsernamePassword(Exception):
     def __init__(self):
-        self.msg = "Incorrect username or password"
-        super().__init__(self.msg)
+        self.message = "Incorrect username or password"
+        super().__init__(self.message)
 
 
 class AdminRoleRequired(Exception):
     def __init__(self):
-        self.msg = "Admin role required"
-        super().__init__(self.msg)
+        self.message = "Admin role required"
+        super().__init__(self.message)
