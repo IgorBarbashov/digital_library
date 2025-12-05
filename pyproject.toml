@@ -48,3 +48,4 @@ pythonVersion = "3.14"
 
 [tool.ruff]
 extend-exclude = ["alembic"]
+line-length = 120
