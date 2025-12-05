@@ -48,6 +48,4 @@ pythonVersion = "3.14"
 
 [tool.ruff]
 extend-exclude = ["alembic"]
-
-[flake8]
-max-line-length = 120
+line-length = 120
