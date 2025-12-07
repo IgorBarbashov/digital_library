@@ -59,13 +59,8 @@ async def create_genre(
         await session.commit()
         return GenreReadSchema.model_validate(genre)
 
-    except IntegrityError as err:
-        await session.rollback()
-
-        if "UNIQUE" in str(err.orig):
-            raise EntityAlreadyExists({"name": genre_data.name}, entity_name="genre") from None
-
-        raise
+    except IntegrityError:
+        raise EntityAlreadyExists({"name": genre_data.name}, entity_name="genre") from None
 
 
 @router.patch(

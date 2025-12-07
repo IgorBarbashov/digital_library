@@ -82,16 +82,11 @@ async def create_user(
 
         return UserReadSchema.from_orm(user)
 
-    except IntegrityError as err:
-        await session.rollback()
-
-        if "UNIQUE" in str(err.orig):
-            raise EntityAlreadyExists(
-                {"username": user_data.username, "email": user_data.email},
-                entity_name="user",
-            ) from None
-
-        raise
+    except IntegrityError:
+        raise EntityAlreadyExists(
+            {"username": user_data.username, "email": user_data.email},
+            entity_name="user",
+        ) from None
 
 
 @router.patch(
