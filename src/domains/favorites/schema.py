@@ -1,6 +1,7 @@
 import uuid
 from pydantic import ConfigDict
 from src.domains.common.schema import BaseSchema
+from src.domains.book.models import Book
 
 
 class FavoriteBaseSchema(BaseSchema):
@@ -9,10 +10,14 @@ class FavoriteBaseSchema(BaseSchema):
 
 
 class FavoriteCreateSchema(FavoriteBaseSchema):
-
     model_config = ConfigDict(from_attributes=True)
 
 
 class FavoriteUpdateSchema(FavoriteBaseSchema):
-
     model_config = ConfigDict(from_attributes=True)
+
+
+class FavoriteReadSchema(BaseSchema):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    book: Book
