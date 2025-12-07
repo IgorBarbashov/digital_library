@@ -7,6 +7,7 @@ from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
     from src.domains.author.models import Author
+    from src.domains.book.models import Book
 
 
 class Genre(Base, BaseModelMixin):
@@ -23,3 +24,4 @@ class Genre(Base, BaseModelMixin):
         viewonly=True,
         lazy="select",
     )
+    books: Mapped[list[Book]] = relationship("Book", back_populates="genre")

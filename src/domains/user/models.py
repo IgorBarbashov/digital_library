@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
+    from src.domains.favorites.models import Favorites
     from src.domains.role.models import Role
 
 
@@ -29,3 +30,4 @@ class User(Base, BaseModelMixin):
         UUID, ForeignKey("role.id", ondelete="RESTRICT"), nullable=False
     )
     role: Mapped[Role] = relationship("Role", back_populates="users")
+    favorites: Mapped[list[Favorites]] = relationship("Favorites", back_populates="user", cascade="all, delete-orphan")

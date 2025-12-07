@@ -7,8 +7,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
+    from src.domains.author.models import Author
     from src.domains.common.association.author_book import AuthorBook
-    from src.domains.genre.models import Author, Genre
+    from src.domains.favorites.models import Favorites
+    from src.domains.genre.models import Genre
 
 
 class Book(Base, BaseModelMixin):
@@ -19,8 +21,17 @@ class Book(Base, BaseModelMixin):
         PG_UUID(as_uuid=True), ForeignKey("genre.id"), nullable=False, unique=False
     )
 
-    author: Mapped[Author] = relationship("Author", back_populates="books")
     genre: Mapped[Genre] = relationship("Genre", back_populates="books")
+
     author_books: Mapped[list[AuthorBook]] = relationship(
-        "AuthorBook", back_populates="author"
+        "AuthorBook", back_populates="book", cascade="all, delete-orphan", overlaps="authors"
     )
+
+    authors: Mapped[list[Author]] = relationship(
+        "Author",
+        secondary="author_book",
+        back_populates="books",
+        lazy="select",
+        overlaps="author_books",
+    )
+    favorites: Mapped[list[Favorites]] = relationship("Favorites", back_populates="book", cascade="all, delete-orphan")
