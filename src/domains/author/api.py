@@ -20,8 +20,8 @@ router = APIRouter()
     summary="Получить список авторов",
 )
 async def get_all(
-    with_genre: Annotated[bool, Query(False, description="Загружать ли жанры")],
     session: Annotated[AsyncSession, Depends(get_async_session)],
+    with_genre: Annotated[bool, Query(..., description="Загружать ли жанры")] = False,
 ) -> list[AuthorReadSchema]:
     stmt = select(Author).order_by(Author.create_at.asc())
     if with_genre:
@@ -38,8 +38,8 @@ async def get_all(
 )
 async def get_by_id(
     author_id: Annotated[uuid.UUID, Path(..., description="ID автора")],
-    with_genre: Annotated[bool, Query(False, description="Загружать ли жанры")],
     session: Annotated[AsyncSession, Depends(get_async_session)],
+    with_genre: Annotated[bool, Query(..., description="Загружать ли жанры")] = False,
 ) -> AuthorReadSchema:
     author = await get_author_orm_by_id(session, author_id, with_genre)
     return AuthorReadSchema.from_orm_with_genres(author, with_genre)

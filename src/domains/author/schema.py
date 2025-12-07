@@ -1,7 +1,6 @@
-from __future__ import annotations
-
 import uuid
 from datetime import date
+from typing import Self
 
 from pydantic import ConfigDict
 from src.domains.author.models import Author
@@ -32,10 +31,8 @@ class AuthorReadSchema(AuthorBaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
-    def from_orm_with_genres(cls, obj: Author, with_genre: bool) -> AuthorReadSchema:
-        genre_ids = (
-            [genre.id for genre in obj.genres] if with_genre and obj.genres else []
-        )
+    def from_orm_with_genres(cls, obj: Author, with_genre: bool) -> Self:
+        genre_ids = [genre.id for genre in obj.genres] if with_genre and obj.genres else []
         author_data = {**obj.__dict__, "genres": genre_ids}
 
         return cls.model_validate(author_data)
