@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import uuid
 from datetime import date
-from typing import List, Optional
 
 from pydantic import ConfigDict
-
 from src.domains.author.models import Author
 from src.domains.common.schema import BasePatchSchema, BaseSchema
 
@@ -13,8 +11,8 @@ from src.domains.common.schema import BasePatchSchema, BaseSchema
 class AuthorBaseSchema(BaseSchema):
     first_name: str
     last_name: str
-    genres: List[uuid.UUID]
-    birth_date: Optional[date] = None
+    genres: list[uuid.UUID]
+    birth_date: date | None = None
 
 
 class AuthorCreateSchema(AuthorBaseSchema):
@@ -22,10 +20,10 @@ class AuthorCreateSchema(AuthorBaseSchema):
 
 
 class AuthorPatchSchema(BasePatchSchema):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    genres: Optional[List[uuid.UUID]] = None
-    birth_date: Optional[date] = None
+    first_name: str | None = None
+    last_name: str | None = None
+    genres: list[uuid.UUID] | None = None
+    birth_date: date | None = None
 
 
 class AuthorReadSchema(AuthorBaseSchema):

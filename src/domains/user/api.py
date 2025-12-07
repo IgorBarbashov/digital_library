@@ -1,5 +1,5 @@
 import uuid
-from typing import Annotated, List, cast
+from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends, Path, status
 from sqlalchemy import delete, select, update
@@ -7,7 +7,6 @@ from sqlalchemy.engine import CursorResult
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-
 from src.auth.guards import get_current_active_user
 from src.auth.utils import get_password_hash
 from src.db.db import get_async_session
@@ -28,12 +27,9 @@ router = APIRouter()
 
 @router.get(
     "/",
-    response_model=List[UserReadSchema],
     summary="Получить список пользователей",
 )
-async def get_all(
-    session: AsyncSession = Depends(get_async_session),
-) -> List[UserReadSchema]:
+async def get_all(session: Annotated[AsyncSession, Depends(get_async_session)]) -> list[UserReadSchema]:
     stmt = select(User).options(selectinload(User.role)).order_by(User.create_at.asc())
     result = await session.execute(stmt)
     users = result.scalars().all()
@@ -43,7 +39,6 @@ async def get_all(
 
 @router.get(
     "/me",
-    response_model=UserReadSchema,
     summary="Получить информацию по текущему пользователю",
 )
 async def get_me(
@@ -54,12 +49,11 @@ async def get_me(
 
 @router.get(
     "/{user_id}",
-    response_model=UserReadSchema,
     summary="Получить пользователя по id",
 )
 async def get_by_id(
-    user_id: uuid.UUID = Path(..., description="ID пользователя"),
-    session: AsyncSession = Depends(get_async_session),
+    user_id: Annotated[uuid.UUID, Path(..., description="ID пользователя")],
+    session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> UserReadSchema:
     user = await get_user_orm_by_id(session, user_id)
     return UserReadSchema.from_orm(user)
@@ -67,13 +61,12 @@ async def get_by_id(
 
 @router.post(
     "/",
-    response_model=UserReadSchema,
     status_code=status.HTTP_201_CREATED,
     summary="Создать пользователя",
 )
 async def create_user(
     user_data: UserCreateSchema,
-    session: AsyncSession = Depends(get_async_session),
+    session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> UserReadSchema:
     try:
         role = await get_role_orm_by_name(session, user_data.role)
@@ -96,20 +89,19 @@ async def create_user(
             raise EntityAlreadyExists(
                 {"username": user_data.username, "email": user_data.email},
                 entity_name="user",
-            )
+            ) from None
 
         raise
 
 
 @router.patch(
     "/{user_id}",
-    response_model=UserReadSchema,
     summary="Частичное обновление пользователя",
 )
 async def patch_user(
     user_data: UserPatchSchema,
-    user_id: uuid.UUID = Path(..., description="ID пользователя"),
-    session: AsyncSession = Depends(get_async_session),
+    user_id: Annotated[uuid.UUID, Path(..., description="ID пользователя")],
+    session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> UserReadSchema:
     update_data = user_data.model_dump(exclude_unset=True)
     stmt = update(User).where(User.id == user_id).values(**update_data)
@@ -127,13 +119,12 @@ async def patch_user(
 
 @router.put(
     "/{user_id}",
-    response_model=UserReadSchema,
     summary="Полное обновление пользователя",
 )
 async def update_user(
     user_data: UserUpdateSchema,
-    user_id: uuid.UUID = Path(..., description="ID пользователя"),
-    session: AsyncSession = Depends(get_async_session),
+    user_id: Annotated[uuid.UUID, Path(..., description="ID пользователя")],
+    session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> UserReadSchema:
     update_user = UserPatchSchema(**user_data.model_dump())
     return await patch_user(user_data=update_user, user_id=user_id, session=session)
@@ -145,8 +136,8 @@ async def update_user(
     summary="Удалить пользователя по id",
 )
 async def delete_user(
-    user_id: uuid.UUID = Path(..., description="ID пользователя"),
-    session: AsyncSession = Depends(get_async_session),
+    user_id: Annotated[uuid.UUID, Path(..., description="ID пользователя")],
+    session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> None:
     stmt = delete(User).where(User.id == user_id).returning(User.id)
     result = await session.execute(stmt)
@@ -166,7 +157,7 @@ async def delete_user(
 async def assign_role_to_user(
     user_id: uuid.UUID,
     user_data: AssignUserRoleSchema,
-    session: AsyncSession = Depends(get_async_session),
+    session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> None:
     role_id = (await get_role_orm_by_name(session, user_data.role)).id
     user = await get_user_orm_by_id(session, user_id)

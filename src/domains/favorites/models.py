@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 import uuid
-
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKeyConstraint, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
-    from src.domains.user.models import User
     from src.domains.book.models import Book
+    from src.domains.user.models import User
 
 
 class Favorites(Base, BaseModelMixin):
@@ -43,5 +41,5 @@ class Favorites(Base, BaseModelMixin):
         PG_UUID(as_uuid=True), nullable=False, index=True
     )
 
-    user: Mapped["User"] = relationship("User", back_populates="favorites")
-    book: Mapped["Book"] = relationship("Book", back_populates="favorites")
+    user: Mapped[User] = relationship("User", back_populates="favorites")
+    book: Mapped[Book] = relationship("Book", back_populates="favorites")

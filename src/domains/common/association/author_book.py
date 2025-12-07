@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
@@ -24,9 +23,9 @@ class AuthorBook(Base, BaseModelMixin):
         PG_UUID(as_uuid=True), ForeignKey("book.id"), primary_key=True
     )
 
-    author: Mapped["Author"] = relationship(
+    author: Mapped[Author] = relationship(
         "Author", back_populates="author_books"
     )
-    book: Mapped["Genre"] = relationship(
+    book: Mapped[Genre] = relationship(
         "Book", back_populates="author_books"
     )

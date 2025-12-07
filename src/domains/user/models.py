@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import UUID, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
@@ -22,7 +21,7 @@ class User(Base, BaseModelMixin):
     last_name: Mapped[str] = mapped_column(String(64), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     disabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    password_changed_at: Mapped[Optional[datetime]] = mapped_column(
+    password_changed_at: Mapped[datetime | None] = mapped_column(
         DateTime, nullable=True, default=None
     )
     failed_login_attempts: Mapped[int] = mapped_column(
@@ -31,4 +30,4 @@ class User(Base, BaseModelMixin):
     role_id: Mapped[uuid.UUID] = mapped_column(
         UUID, ForeignKey("role.id", ondelete="RESTRICT"), nullable=False
     )
-    role: Mapped["Role"] = relationship("Role", back_populates="users")
+    role: Mapped[Role] = relationship("Role", back_populates="users")
