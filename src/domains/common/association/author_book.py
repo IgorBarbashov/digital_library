@@ -14,8 +14,18 @@ if TYPE_CHECKING:
 class AuthorBook(Base, CreatedUpdatedColumnsMixin):
     __tablename__ = "author_book"
 
-    author_id: Mapped[uuid.UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("author.id"), primary_key=True)
-    book_id: Mapped[uuid.UUID] = mapped_column(PG_UUID(as_uuid=True), ForeignKey("book.id"), primary_key=True)
+    author_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("author.id"),
+        primary_key=True,
+        onupdate="CASCADE",
+    )
+    book_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("book.id"),
+        primary_key=True,
+        onupdate="CASCADE",
+    )
 
     author: Mapped[Author] = relationship("Author", back_populates="author_books", overlaps="authors,books")
     book: Mapped[Book] = relationship("Book", back_populates="author_books", overlaps="authors,books")
