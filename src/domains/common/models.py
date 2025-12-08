@@ -11,18 +11,20 @@ class Base(DeclarativeBase):
 
 
 @declarative_mixin
-class BaseModelMixin:
-    id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-    )
-    create_at: Mapped[DateTime] = mapped_column(
-        DateTime, nullable=False, default=datetime.utcnow
-    )
+class CreatedUpdatedColumnsMixin:
+    create_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
     update_at: Mapped[DateTime] = mapped_column(
         DateTime,
         nullable=False,
         default=datetime.utcnow,
         onupdate=func.now(),
+    )
+
+
+@declarative_mixin
+class BaseModelMixin(CreatedUpdatedColumnsMixin):
+    id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
     )

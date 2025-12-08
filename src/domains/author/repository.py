@@ -3,7 +3,6 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-
 from src.domains.author.models import Author
 from src.exceptions.entity import EntityNotFound
 
