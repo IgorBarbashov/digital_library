@@ -1,8 +1,6 @@
 import uuid
-from typing import Optional
 
 from pydantic import ConfigDict
-
 from src.domains.common.schema import BasePatchSchema, BaseSchema
 
 
@@ -15,7 +13,7 @@ class GenreCreateSchema(GenreBaseSchema):
 
 
 class GenrePatchSchema(BasePatchSchema):
-    name: Optional[str] = None
+    name: str | None = None
 
 
 class GenreReadSchema(BaseSchema):

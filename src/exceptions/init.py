@@ -1,6 +1,5 @@
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
-
 from src.exceptions.auth import (
     AdminRoleRequired,
     BadCredentials,
