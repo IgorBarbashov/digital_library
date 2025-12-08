@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import ConfigDict, EmailStr, SecretStr
-
 from src.constants.user_role import UserRole
 from src.domains.common.schema import BasePatchSchema, BaseSchema
 from src.domains.user.models import User
@@ -22,16 +21,16 @@ class UserCreateSchema(UserBaseSchema):
     password: SecretStr
     role: UserRole
 
-    def to_orm_dict(self) -> Dict[str, Any]:
+    def to_orm_dict(self) -> dict[str, Any]:
         return self.model_dump(exclude={"role", "password"})
 
 
 class UserPatchSchema(BasePatchSchema):
-    username: Optional[str] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    disabled: Optional[bool] = None
+    username: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr | None = None
+    disabled: bool | None = None
 
 
 class UserUpdateSchema(UserBaseSchema):
