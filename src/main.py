@@ -1,9 +1,10 @@
 import asyncio
 from contextlib import asynccontextmanager
 
-from alembic import command
 from alembic.config import Config
 from fastapi import FastAPI
+
+from alembic import command
 from src.api.v1.init import init_routers
 from src.exceptions.init import init_exception_handlers
 from src.setting import settings
