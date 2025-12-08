@@ -37,9 +37,7 @@ class Settings(BaseSettings):
 
     @property
     def db_dsn(self) -> str:
-        """Return a postgres DSN. If DATABASE_URL is provided, use it;
-        otherwise compose a DSN from the individual Postgres fields.
-        """
+        """Compose a DSN from the individual Postgres fields."""
 
         return (
             f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}"

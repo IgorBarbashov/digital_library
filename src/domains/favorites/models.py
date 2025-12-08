@@ -1,46 +1,33 @@
-from __future__ import annotations
-
 import uuid
-
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKeyConstraint, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-
-from src.domains.common.models import Base, BaseModelMixin
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from src.domains.common.models import Base, CreatedUpdatedColumnsMixin
 
 if TYPE_CHECKING:
-    from src.domains.user.models import User
     from src.domains.book.models import Book
+    from src.domains.user.models import User
 
 
-class Favorites(Base, BaseModelMixin):
+class Favorites(Base, CreatedUpdatedColumnsMixin):
     __tablename__ = "favorites"
 
-    __table_args__ = (
-        # При удалении книги или пользователя будет автоматически удалена запись из favorites
-        ForeignKeyConstraint(
-            ["user_id"],
-            ["user.id"],
-            name="fk_favorite_user",
-            ondelete="CASCADE"
-        ),
-        ForeignKeyConstraint(
-            ["book_id"],
-            ["book.id"],
-            name="fk_favorite_book",
-            ondelete="CASCADE",
-        ),
-        # Один пользователь — одна запись на книгу
-        UniqueConstraint("user_id", "book_id", name="uc_user_book"),
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("user.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+        primary_key=True,
     )
 
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), nullable=False, index=True
-    )
     book_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), nullable=False, index=True
+        PG_UUID(as_uuid=True),
+        ForeignKey("book.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+        primary_key=True,
     )
 
     user: Mapped["User"] = relationship("User", back_populates="favorites")
