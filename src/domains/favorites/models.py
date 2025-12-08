@@ -20,12 +20,7 @@ class Favorites(Base, BaseModelMixin):
 
     __table_args__ = (
         # При удалении книги или пользователя будет автоматически удалена запись из favorites
-        ForeignKeyConstraint(
-            ["user_id"],
-            ["user.id"],
-            name="fk_favorite_user",
-            ondelete="CASCADE"
-        ),
+        ForeignKeyConstraint(["user_id"], ["user.id"], name="fk_favorite_user", ondelete="CASCADE"),
         ForeignKeyConstraint(
             ["book_id"],
             ["book.id"],
@@ -36,12 +31,8 @@ class Favorites(Base, BaseModelMixin):
         UniqueConstraint("user_id", "book_id", name="uc_user_book"),
     )
 
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), nullable=False, index=True
-    )
-    book_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), nullable=False, index=True
-    )
+    user_id: Mapped[uuid.UUID] = mapped_column(PG_UUID(as_uuid=True), nullable=False, index=True)
+    book_id: Mapped[uuid.UUID] = mapped_column(PG_UUID(as_uuid=True), nullable=False, index=True)
 
-    user: Mapped["User"] = relationship("User", back_populates="favorites")
-    book: Mapped["Book"] = relationship("Book", back_populates="favorites")
+    users: Mapped["User"] = relationship("User", back_populates="favorites")
+    books: Mapped["Book"] = relationship("Book", back_populates="favorites")

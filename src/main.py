@@ -19,7 +19,7 @@ async def run_migrations():
 @asynccontextmanager
 async def lifespan(app_: FastAPI):
     await run_migrations()
-    init_routers(app_)
+    # init_routers(app_)
     yield
 
 
@@ -28,6 +28,8 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
 )
+
+init_routers(app)
 
 init_exception_handlers(app)
 

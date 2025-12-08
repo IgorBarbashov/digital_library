@@ -16,12 +16,12 @@ from src.domains.favorites.repository import (
 from src.domains.favorites.schema import FavoriteCreateSchema, FavoriteReadSchema
 from src.domains.user.schema import UserReadSchema
 
-router = APIRouter(prefix="/favorites", tags=["Favorites"])
+router = APIRouter(prefix="", tags=["Favorites"])
 
 
 @router.post(
     "/",
-    response_model=FavoriteReadSchema,
+    response_model=FavoriteCreateSchema,
     status_code=status.HTTP_201_CREATED,
     summary="Добавить книгу в избранное",
 )

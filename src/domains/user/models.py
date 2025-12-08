@@ -11,6 +11,7 @@ from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
     from src.domains.role.models import Role
+    from src.domains.favorites.models import Favorites
 
 
 class User(Base, BaseModelMixin):
@@ -32,3 +33,4 @@ class User(Base, BaseModelMixin):
         UUID, ForeignKey("role.id", ondelete="RESTRICT"), nullable=False
     )
     role: Mapped["Role"] = relationship("Role", back_populates="users")
+    favorites: Mapped["Favorites"] = relationship("Favorites", back_populates="users")

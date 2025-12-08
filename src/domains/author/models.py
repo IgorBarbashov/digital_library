@@ -7,10 +7,12 @@ from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.domains.common.association.author_genre import AuthorGenre
+from src.domains.common.association.author_book import AuthorBook
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
     from src.domains.genre.models import Genre
+    from src.domains.book.models import Book
 
 
 class Author(Base, BaseModelMixin):
@@ -18,11 +20,12 @@ class Author(Base, BaseModelMixin):
 
     first_name: Mapped[str] = mapped_column(String(64), nullable=False)
     last_name: Mapped[str] = mapped_column(String(64), nullable=False)
-    birth_date: Mapped[Optional[date]] = mapped_column(
-        DateTime, nullable=True, default=None
-    )
+    birth_date: Mapped[Optional[date]] = mapped_column(DateTime, nullable=True, default=None)
     author_genres: Mapped[List[AuthorGenre]] = relationship(
         "AuthorGenre", back_populates="author", cascade="all, delete-orphan"
+    )
+    author_books: Mapped[List[AuthorBook]] = relationship(
+        "AuthorBook", back_populates="author", cascade="all, delete-orphan"
     )
     genres: Mapped[List["Genre"]] = relationship(
         "Genre",
@@ -31,3 +34,4 @@ class Author(Base, BaseModelMixin):
         viewonly=True,
         lazy="select",
     )
+
