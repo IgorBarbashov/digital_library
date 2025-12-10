@@ -1,5 +1,4 @@
 import uuid
-
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -51,7 +50,6 @@ async def add_to_favorites(
 
 @router.get(
     "/",
-    response_model=list[FavoriteReadSchema],
     summary="Получить список избранного для текущего пользователя",
 )
 async def get_my_favorites(
