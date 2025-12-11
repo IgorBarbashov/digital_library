@@ -118,6 +118,21 @@ files = [
 cffi = {version = ">=2.0.0b1", markers = "python_version >= \"3.14\""}
 
 [[package]]
+name = "asgi-lifespan"
+version = "2.1.0"
+description = "Programmatic startup/shutdown of ASGI apps."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "asgi-lifespan-2.1.0.tar.gz", hash = "sha256:5e2effaf0bfe39829cf2d64e7ecc47c7d86d676a6599f7afba378c31f5e3a308"},
+    {file = "asgi_lifespan-2.1.0-py3-none-any.whl", hash = "sha256:ed840706680e28428c01e14afb3875d7d76d3206f3d5b2f2294e059b5c23804f"},
+]
+
+[package.dependencies]
+sniffio = "*"
+
+[[package]]
 name = "asyncpg"
 version = "0.31.0"
 description = "An asyncio PostgreSQL driver"
@@ -1373,4 +1388,4 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.14"
-content-hash = "07b756b290689c5608a17c0f96c584c358af3755591cb0445d73d5db8129f2e5"
+content-hash = "ef7162cff89c6323a504b673c6c07e450ec1c56b962d7ec3bc457748e13c9e84"

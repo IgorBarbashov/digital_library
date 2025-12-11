@@ -1,7 +1,9 @@
 from collections import defaultdict
+from collections.abc import AsyncGenerator
 from typing import Any
 
 import pytest
+from asgi_lifespan import LifespanManager
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
@@ -42,9 +44,12 @@ async def db_session():
 
 
 @pytest.fixture
-def client() -> AsyncClient:
-    client = AsyncClient(transport=ASGITransport(app=app), base_url="http://test")
-    return client
+async def client() -> AsyncGenerator[AsyncClient, None]:
+    async with LifespanManager(app), AsyncClient(
+            transport=ASGITransport(app=app),
+            base_url="http://test"
+        ) as client:
+            yield client
 
 
 @pytest.fixture(scope="function")
