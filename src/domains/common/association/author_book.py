@@ -4,11 +4,13 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from src.domains.book.models import Book
 from src.domains.common.models import Base, CreatedUpdatedColumnsMixin
 
 if TYPE_CHECKING:
     from src.domains.author.models import Author
+    from src.domains.book.models import Book
 
 
 class AuthorBook(Base, CreatedUpdatedColumnsMixin):
