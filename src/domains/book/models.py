@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from src.domains.common.association.author_book import AuthorBook
     from src.domains.favorites.models import Favorites
     from src.domains.genre.models import Genre
+    from src.domains.category.models import Category
 
 
 class Book(Base, BaseModelMixin):
@@ -23,9 +24,13 @@ class Book(Base, BaseModelMixin):
     )
 
     genre: Mapped[Genre] = relationship("Genre", back_populates="books")
+    category: Mapped["Category"] = relationship("Category", back_populates="books")
 
     author_books: Mapped[list[AuthorBook]] = relationship(
-        "AuthorBook", back_populates="book", cascade="all, delete-orphan", overlaps="authors"
+        "AuthorBook",
+        back_populates="book",
+        cascade="all, delete-orphan",
+        overlaps="authors",
     )
 
     authors: Mapped[list[Author]] = relationship(
@@ -35,4 +40,6 @@ class Book(Base, BaseModelMixin):
         lazy="select",
         overlaps="author_books",
     )
-    favorites: Mapped[list[Favorites]] = relationship("Favorites", back_populates="book", cascade="all, delete-orphan")
+    favorites: Mapped[list[Favorites]] = relationship(
+        "Favorites", back_populates="book", cascade="all, delete-orphan"
+    )
