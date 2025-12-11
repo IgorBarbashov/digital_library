@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.domains.book.models import Book
 from src.domains.common.association.author_book import AuthorBook
 from src.domains.common.association.author_genre import AuthorGenre
 from src.domains.common.models import Base, BaseModelMixin
