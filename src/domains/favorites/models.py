@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from src.domains.common.models import Base, CreatedUpdatedColumnsMixin
 
 if TYPE_CHECKING:
@@ -32,3 +33,4 @@ class Favorites(Base, CreatedUpdatedColumnsMixin):
 
     user: Mapped["User"] = relationship("User", back_populates="favorites")
     book: Mapped["Book"] = relationship("Book", back_populates="favorites")
+

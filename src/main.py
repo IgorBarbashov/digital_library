@@ -1,9 +1,10 @@
 import asyncio
 from contextlib import asynccontextmanager
 
-from alembic import command
 from alembic.config import Config
 from fastapi import FastAPI
+
+from alembic import command
 from src.api.v1.init import init_routers
 from src.exceptions.init import init_exception_handlers
 from src.setting import settings
@@ -17,8 +18,8 @@ async def run_migrations():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    init_routers(app) 
     await run_migrations()
-    init_routers(app)
     yield
 
 
@@ -27,5 +28,6 @@ app = FastAPI(
     docs_url="/api/docs",
     openapi_url="/api/openapi.json",
 )
+
 
 init_exception_handlers(app)
