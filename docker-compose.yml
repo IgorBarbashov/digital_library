@@ -9,9 +9,20 @@ services:
     ports:
       - "${PORT}:${PORT}"
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       db:
         condition: service_healthy
     command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "${PORT}"]
+
+  migrate:
+    build: .
+    image: fastapi-project:latest
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["poetry", "run", "alembic", "upgrade", "head"]
 
   db:
     image: postgres:18-alpine

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from src.constants.user_role import UserRole
 from src.domains.common.models import Base, BaseModelMixin
 
