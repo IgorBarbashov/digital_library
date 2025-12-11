@@ -10,7 +10,6 @@ from src.db.db import get_async_session
 from src.domains.favorites.repository import (
     create_favorite,
     delete_favorite,
-    get_favorite,
     list_favorites_by_user,
 )
 from src.domains.favorites.schema import FavoriteCreateSchema, FavoriteReadSchema
