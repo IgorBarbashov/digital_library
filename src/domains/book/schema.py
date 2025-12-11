@@ -13,3 +13,7 @@ class BookBaseSchema(BaseSchema):
 
 class BookCreateSchema(BookBaseSchema):
     model_config = ConfigDict(from_attributes=True)
+
+
+class BookReadSchema(BookBaseSchema):
+    model_config = ConfigDict(from_attributes=True)
