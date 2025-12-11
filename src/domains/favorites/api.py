@@ -29,14 +29,12 @@ async def add_to_favorites(
     current_user: Annotated[UserReadSchema, Depends(get_current_active_user)],
     session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> FavoriteReadSchema:
-    # Проверяем, что пользователь добавляет для себя
     if schema.user_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Нельзя добавлять в избранное для другого пользователя",
         )
 
-    # Проверяем существование записи
     existing = await get_favorite(session, schema.user_id, schema.book_id)
     if existing:
         raise HTTPException(
@@ -76,4 +74,4 @@ async def remove_from_favorites(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Запись не найдена в избранном",
         )
-    return  # 204 No Content
+    return

@@ -11,7 +11,6 @@ async def create_favorite(session: AsyncSession, user_id: uuid.UUID, book_id: uu
     favorite = Favorites(user_id=user_id, book_id=book_id)
     session.add(favorite)
     await session.commit()
-    await session.refresh(favorite)
     return favorite
 
 

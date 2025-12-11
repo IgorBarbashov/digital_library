@@ -95,19 +95,6 @@ async def test_book(db_session, test_genre: Genre) -> Book:
     return book
 
 
-# @pytest.mark.asyncio
-# async def test_client_with_token(client: AsyncClient, user_token: dict[str, Any]):
-#     headers = {
-#         "Authorization": f"Bearer {user_token['token']['access_token']}",
-#         "Content-Type": "application/x-www-form-urlencoded",
-#     }
-#     response = await client.get("/api/v1/user/me", headers=headers)
-
-#     assert response.status_code == 201
-#     data = response.json()
-#     assert data["user_id"] == user_token["user"].id
-
-
 @pytest.mark.asyncio
 async def test_add_book_to_favorites(client: AsyncClient, db_session, user_token: dict[str, Any], test_book: Book):
     result = await db_session.execute(
@@ -138,32 +125,3 @@ async def test_add_book_to_favorites(client: AsyncClient, db_session, user_token
     print(data)
     assert data["book_id"] == str(test_book.id)
     assert "user_id" in data
-
-
-# @pytest.mark.asyncio
-# async def test_list_favorites(client: AsyncClient):
-#     headers = {
-#         "Authorization": f"Bearer {TEST_TOKEN['token']['access_token']}",
-#         "Content-Type": "application/json"
-#     }
-
-#     response = await client.get("/api/v1/favorites/", headers=headers)
-#     assert response.status_code == 200
-#     print(response)
-    
-#     data = response.json()
-
-#     assert len(data) == 1
-#     favorite = data[0]
-#     print(favorite)
-
-
-# @pytest.mark.asyncio
-# async def test_delete_favorite(client: AsyncClient, user_token: dict[str, Any], test_book: Book):
-#     headers = {
-#         "Authorization": f"Bearer {user_token['token']['access_token']}",
-#         "Content-Type": "application/json",
-#     }
-
-#     response_delete = await client.delete(f"/api/v1/favorites/{test_book.id}", headers=headers)
-#     assert response_delete.status_code == 204  # No Content
