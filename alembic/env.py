@@ -17,6 +17,8 @@ from src.domains.favorites.models import Favorites
 from src.domains.review.models import Review
 from src.setting import settings
 from src.domains.category.models import Category
+from src.domains.review.models import Review
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
