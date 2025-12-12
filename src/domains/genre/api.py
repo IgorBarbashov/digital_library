@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Path, status
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.db.db import get_async_session
 from src.domains.genre.models import Genre
 from src.domains.genre.schema import GenreCreateSchema, GenrePatchSchema, GenreReadSchema

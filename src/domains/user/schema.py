@@ -4,6 +4,7 @@ import uuid
 from typing import Any
 
 from pydantic import ConfigDict, EmailStr, SecretStr
+
 from src.constants.user_role import UserRole
 from src.domains.common.schema import BasePatchSchema, BaseSchema
 from src.domains.user.models import User

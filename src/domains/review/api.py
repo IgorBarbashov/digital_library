@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -76,7 +76,9 @@ async def create(
         await session.commit()
     except IntegrityError:
         await session.rollback()
-        raise EntityNotFound({"book_id": review_in.book_id}, entity_name="book")
+        raise EntityNotFound(
+            {"book_id": review_in.book_id}, entity_name="book"
+        ) from None
 
     await session.refresh(review)
 
@@ -100,8 +102,6 @@ async def patch(
 
     # Check if current user is the author of the review
     if review.user_id != current_user.id:
-        from fastapi import HTTPException
-
         raise HTTPException(
             status_code=403, detail="You can only update your own reviews"
         )
@@ -136,8 +136,6 @@ async def delete_by_id(
 
     # Check if current user is the author of the review
     if review.user_id != current_user.id:
-        from fastapi import HTTPException
-
         raise HTTPException(
             status_code=403, detail="You can only delete your own reviews"
         )

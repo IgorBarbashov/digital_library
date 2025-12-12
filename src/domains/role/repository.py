@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.constants.user_role import UserRole
 from src.domains.role.models import Role
 from src.exceptions.entity import EntityNotFound

@@ -3,16 +3,16 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
     from src.domains.author.models import Author
+    from src.domains.category.models import Category
     from src.domains.common.association.author_book import AuthorBook
     from src.domains.favorites.models import Favorites
     from src.domains.genre.models import Genre
-    from src.domains.category.models import Category
     from src.domains.review.models import Review
 
 

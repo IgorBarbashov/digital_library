@@ -65,7 +65,9 @@ async def create(
         await session.commit()
     except IntegrityError:
         await session.rollback()
-        raise EntityAlreadyExists({"name": category_in.name}, entity_name="category")
+        raise EntityAlreadyExists(
+            {"name": category_in.name}, entity_name="category"
+        ) from None
 
     await session.refresh(category)
 
@@ -99,7 +101,7 @@ async def patch(
         await session.rollback()
         raise EntityAlreadyExists(
             category_in.model_dump(exclude_unset=True), entity_name="category"
-        )
+        ) from None
 
     await session.refresh(category)
 
