@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from src.domains.favorites.models import Favorites
     from src.domains.genre.models import Genre
     from src.domains.category.models import Category
+    from src.domains.review.models import Review
 
 
 class Book(Base, BaseModelMixin):
@@ -42,4 +43,10 @@ class Book(Base, BaseModelMixin):
     )
     favorites: Mapped[list[Favorites]] = relationship(
         "Favorites", back_populates="book", cascade="all, delete-orphan"
+    )
+
+    reviews: Mapped[list["Review"]] = relationship(
+        "Review",
+        back_populates="book",
+        cascade="all, delete-orphan",
     )
