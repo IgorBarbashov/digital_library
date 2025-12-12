@@ -22,9 +22,14 @@ class Book(Base, BaseModelMixin):
     genre_id: Mapped[uuid.UUID] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("genre.id"), nullable=False, unique=False
     )
+    category_id: Mapped[uuid.UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("category.id"), nullable=True, unique=False
+    )
 
     genre: Mapped[Genre] = relationship("Genre", back_populates="books")
-    category: Mapped["Category"] = relationship("Category", back_populates="books")
+    category: Mapped["Category | None"] = relationship(
+        "Category", back_populates="books"
+    )
 
     author_books: Mapped[list[AuthorBook]] = relationship(
         "AuthorBook",
