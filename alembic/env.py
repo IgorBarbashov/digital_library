@@ -14,6 +14,7 @@ from src.domains.user.models import User
 from src.domains.role.models import Role
 from src.domains.book.models import Book
 from src.domains.favorites.models import Favorites
+from src.domains.review.models import Review
 from src.setting import settings
 from src.domains.category.models import Category
 
