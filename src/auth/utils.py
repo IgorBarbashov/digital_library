@@ -21,9 +21,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return password_hash.verify(plain_password, hashed_password)
 
 
-async def authenticate_user(
-    session: AsyncSession, username: str, password: str
-) -> UserReadSchema:
+async def authenticate_user(session: AsyncSession, username: str, password: str) -> UserReadSchema:
     try:
         user = await get_user_orm_by_username(session, username)
 
@@ -47,8 +45,6 @@ def create_access_token(user: UserReadSchema) -> str:
         "iat": int(now.timestamp()),
         "exp": int(expire.timestamp()),
     }
-    encoded_jwt = jwt.encode(
-        to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm
-    )
+    encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
 
     return encoded_jwt

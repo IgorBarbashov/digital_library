@@ -5,8 +5,10 @@ from typing import Any
 
 from pydantic import ConfigDict, EmailStr, SecretStr
 
+from src.constants.pagination import DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_OFFSET
 from src.constants.user_role import UserRole
-from src.domains.common.schema import BasePatchSchema, BaseSchema
+from src.domains.common.schema import BasePatchSchema, BaseSchema, OrderBaseSchema
+from src.domains.user.constants import UserOrderBy
 from src.domains.user.models import User
 
 
@@ -60,3 +62,16 @@ class UserWithPasswordReadSchema(UserReadSchema):
 
 class AssignUserRoleSchema(BaseSchema):
     role: UserRole
+
+
+class UserFiltersSchema(BaseSchema):
+    username: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    email: str | None = None
+    limit: int = DEFAULT_PAGINATION_LIMIT
+    offset: int = DEFAULT_PAGINATION_OFFSET
+
+
+class UserOrderSchema(OrderBaseSchema):
+    order_by: UserOrderBy = UserOrderBy.create_at
