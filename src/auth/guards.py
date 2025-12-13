@@ -4,6 +4,7 @@ import jwt
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.auth.schema import TokenDataSchema
 from src.constants.user_role import UserRole
 from src.db.db import get_async_session

@@ -7,6 +7,7 @@ from sqlalchemy.engine import CursorResult
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+
 from src.auth.guards import get_current_active_user
 from src.auth.utils import get_password_hash
 from src.db.db import get_async_session
