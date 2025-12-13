@@ -124,3 +124,79 @@ async def delete_book(
     if result.fetchone() is None:
         raise EntityNotFound({"id": id}, "book")
     await session.commit()
+
+
+async def get_book_information(session: AsyncSession, id: uuid.UUID):
+    from sqlalchemy import func
+    from sqlalchemy.orm import joinedload
+    from src.domains.review.models import Review
+    from src.domains.review.schema import ReviewWithUserSchema
+
+    book_stmt = select(Book).where(Book.id == id)
+    book_result = await session.execute(book_stmt)
+    book = book_result.scalar_one_or_none()
+
+    if not book:
+        raise EntityNotFound({"id": id}, "book")
+
+    rating_stmt = select(func.avg(Review.rating), func.count(Review.id)).where(Review.book_id == id)
+    rating_result = await session.execute(rating_stmt)
+    avg_rating, total_ratings = rating_result.one()
+
+    max_rating_stmt = select(func.count(Review.id)).where(Review.book_id == id, Review.rating == 5)
+    max_rating_result = await session.execute(max_rating_stmt)
+    max_rating_count = max_rating_result.scalar()
+
+    text_reviews_stmt = select(func.count(Review.id)).where(Review.book_id == id, Review.text.isnot(None), Review.text != "")
+    text_reviews_result = await session.execute(text_reviews_stmt)
+    text_reviews_count = text_reviews_result.scalar()
+
+    reviews_stmt = (
+        select(Review)
+        .options(joinedload(Review.user))
+        .where(Review.book_id == id)
+        .order_by(Review.create_at.desc())
+        .limit(10)
+    )
+    reviews_result = await session.execute(reviews_stmt)
+    reviews = reviews_result.scalars().all()
+
+    latest_reviews = [
+        ReviewWithUserSchema(
+            id=r.id,
+            user_id=r.user_id,
+            username=r.user.username,
+            book_id=r.book_id,
+            rating=r.rating,
+            text=r.text,
+            created_at=r.create_at.strftime("%Y-%m-%d %H:%M"),
+        )
+        for r in reviews
+    ]
+
+    from src.domains.author.schema import AuthorReadSchema
+
+    authors_data = [
+        AuthorReadSchema(
+            id=author.id,
+            first_name=author.first_name,
+            last_name=author.last_name,
+            birth_date=author.birth_date,
+            genres=[g.id for g in author.genres] if author.genres else [],
+        )
+        for author in book.authors
+    ]
+
+    return {
+        "id": book.id,
+        "title": book.title,
+        "authors": authors_data,
+        "description": book.description,
+        "genre_id": book.genre_id,
+        "category_id": book.category_id,
+        "average_rating": float(avg_rating) if avg_rating else None,
+        "total_ratings": total_ratings,
+        "max_rating_count": max_rating_count,
+        "text_reviews_count": text_reviews_count,
+        "latest_reviews": latest_reviews,
+    }

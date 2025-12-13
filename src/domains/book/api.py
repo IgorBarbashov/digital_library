@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.db import get_async_session
-from src.domains.book.repository import create_book, delete_book, get_book_by_id, get_books_list, update_book
-from src.domains.book.schema import BookCreateSchema, BookFilters, BookReadSchema, BookUpdateSchema
+from src.domains.book.repository import create_book, delete_book, get_book_by_id, get_book_information, get_books_list, update_book
+from src.domains.book.schema import BookCreateSchema, BookInformationSchema, BookFilters, BookReadSchema, BookUpdateSchema
 
 router = APIRouter()
 
@@ -56,3 +56,12 @@ async def patch_book_handler(
     book: BookUpdateSchema,
 ) -> BookReadSchema:
     return await update_book(session, id, book)
+
+
+@router.get("/{id}/information")
+async def get_book_information_handler(
+    session: Annotated[AsyncSession, Depends(get_async_session)],
+    id: uuid.UUID,
+) -> BookInformationSchema:
+    result = await get_book_information(session, id)
+    return BookInformationSchema.model_validate(result)
