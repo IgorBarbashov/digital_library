@@ -6,9 +6,11 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.auth.guards import get_current_active_admin
 from src.db.db import get_async_session
 from src.domains.genre.models import Genre
 from src.domains.genre.schema import GenreCreateSchema, GenrePatchSchema, GenreReadSchema
+from src.domains.user.schema import UserReadSchema
 from src.exceptions.entity import EntityAlreadyExists, EntityNotFound
 
 router = APIRouter()
@@ -51,6 +53,7 @@ async def get_by_id(
 )
 async def create_genre(
     genre_data: GenreCreateSchema,
+    _: Annotated[UserReadSchema, Depends(get_current_active_admin)],
     session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> GenreReadSchema:
     genre = Genre(name=genre_data.name)
@@ -71,6 +74,7 @@ async def create_genre(
 async def patch_genre(
     genre_data: GenrePatchSchema,
     genre_id: Annotated[uuid.UUID, Path(..., description="ID жанра")],
+    _: Annotated[UserReadSchema, Depends(get_current_active_admin)],
     session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> GenreReadSchema:
     update_data = genre_data.model_dump(exclude_unset=True)
@@ -94,6 +98,7 @@ async def patch_genre(
 )
 async def delete_genre(
     genre_id: Annotated[uuid.UUID, Path(..., description="ID жанра")],
+    _: Annotated[UserReadSchema, Depends(get_current_active_admin)],
     session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> None:
     stmt = delete(Genre).where(Genre.id == genre_id).returning(Genre.id)

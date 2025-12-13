@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 
 
 class Review(Base, BaseModelMixin):
-
     __tablename__ = "review"
 
     user_id: Mapped[uuid.UUID] = mapped_column(
@@ -29,9 +28,7 @@ class Review(Base, BaseModelMixin):
     rating: Mapped[int] = mapped_column(Integer, nullable=False)
     text: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    __table_args__ = (
-        CheckConstraint("rating >= 1 AND rating <= 5", name="check_rating_range"),
-    )
+    __table_args__ = (CheckConstraint("rating >= 1 AND rating <= 5", name="check_rating_range"),)
 
     user: Mapped["User"] = relationship("User", back_populates="reviews")
     book: Mapped["Book"] = relationship("Book", back_populates="reviews")

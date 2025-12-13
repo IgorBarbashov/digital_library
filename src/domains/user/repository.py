@@ -20,9 +20,7 @@ async def get_user_orm_by_id(session: AsyncSession, user_id: uuid.UUID) -> User:
 
 
 async def get_user_orm_by_username(session: AsyncSession, username: str) -> User:
-    stmt = (
-        select(User).options(selectinload(User.role)).where(User.username == username)
-    )
+    stmt = select(User).options(selectinload(User.role)).where(User.username == username)
     result = await session.execute(stmt)
     user = result.scalar_one_or_none()
 
