@@ -1,4 +1,5 @@
 from pydantic import SecretStr
+
 from src.domains.common.schema import BaseSchema
 
 

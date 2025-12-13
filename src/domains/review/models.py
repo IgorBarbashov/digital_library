@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Text, CheckConstraint
+from sqlalchemy import CheckConstraint, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+
 from src.domains.common.models import Base, BaseModelMixin
 
 
@@ -11,9 +12,7 @@ class Review(Base, BaseModelMixin):
     rating = Column(Integer, nullable=False)
     text = Column(Text, nullable=True)
 
-    __table_args__ = (
-        CheckConstraint("rating >= 1 AND rating <= 5", name="check_rating_range"),
-    )
+    __table_args__ = (CheckConstraint("rating >= 1 AND rating <= 5", name="check_rating_range"),)
 
     user = relationship("User", back_populates="reviews")
     book = relationship("Book", back_populates="reviews")
