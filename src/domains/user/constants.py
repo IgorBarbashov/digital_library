@@ -1,11 +1,11 @@
-from enum import Enum
+from enum import StrEnum
 
 from sqlalchemy.orm import InstrumentedAttribute
 
 from src.domains.user.models import User
 
 
-class UserOrderBy(str, Enum):
+class UserOrderBy(StrEnum):
     username = "username"
     first_name = "first_name"
     last_name = "last_name"
