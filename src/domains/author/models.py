@@ -31,13 +31,17 @@ class Author(Base, BaseModelMixin):
     )
 
     author_books: Mapped[list[AuthorBook]] = relationship(
-        "AuthorBook", back_populates="author", cascade="all, delete-orphan", overlaps="authors,books"
+        "AuthorBook",
+        back_populates="author",
+        cascade="all, delete-orphan",
+        overlaps="authors,books",
+        lazy="selectin",
     )
 
     books: Mapped[list[Book]] = relationship(
         "Book",
         secondary="author_book",
         back_populates="authors",
-        lazy="select",
+        lazy="selectin",
         overlaps="author,author_books,book",
     )

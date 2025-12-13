@@ -29,7 +29,5 @@ class User(Base, BaseModelMixin):
 
     favorites: Mapped[list[Favorites]] = relationship("Favorites", back_populates="user", cascade="all, delete-orphan")
     reviews: Mapped[list["Review"]] = relationship(
-        "Review",
-        back_populates="user",
-        cascade="all, delete-orphan",
+        "Review", back_populates="user", cascade="all, delete-orphan"
     )
