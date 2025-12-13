@@ -28,5 +28,5 @@ class AuthorGenre(Base, CreatedUpdatedColumnsMixin):
         primary_key=True,
     )
 
-    author: Mapped[Author] = relationship("Author", back_populates="author_genres")
-    genre: Mapped[Genre] = relationship("Genre", back_populates="author_genres")
+    author: Mapped["Author"] = relationship("Author", back_populates="author_genres")
+    genre: Mapped["Genre"] = relationship("Genre", back_populates="author_genres")

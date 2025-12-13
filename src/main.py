@@ -18,5 +18,5 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-
+init_routers(app)
 init_exception_handlers(app)

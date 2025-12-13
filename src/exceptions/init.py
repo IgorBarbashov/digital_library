@@ -1,8 +1,17 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from src.exceptions.auth import AdminRoleRequired, BadCredentials, InactiveUser, IncorrectUsernamePassword
-from src.exceptions.entity import EntityAlreadyExists, EntityIntegrityException, EntityNotFound, NoDataToPatchEntity
+from src.exceptions.auth import (
+    AdminRoleRequired,
+    BadCredentials,
+    InactiveUser,
+    IncorrectUsernamePassword,
+)
+from src.exceptions.entity import (
+    EntityAlreadyExists,
+    EntityNotFound,
+    NoDataToPatchEntity,
+)
 
 
 def init_exception_handlers(app: FastAPI):
