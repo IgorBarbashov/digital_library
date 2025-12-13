@@ -22,7 +22,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ["poetry", "run", "alembic", "upgrade", "head"]
+    command: ["poetry", "run", "alembic", "upgrade", "heads"]
 
   db:
     image: postgres:18-alpine

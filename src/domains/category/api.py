@@ -9,12 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.auth.guards import get_current_active_admin
 from src.db.db import get_async_session
 from src.domains.category.models import Category
-from src.domains.user.schema import UserReadSchema
 from src.domains.category.schema import (
     CategoryCreateSchema,
     CategoryPatchSchema,
     CategoryReadSchema,
 )
+from src.domains.user.schema import UserReadSchema
 from src.exceptions.entity import EntityAlreadyExists, EntityNotFound
 
 router = APIRouter()

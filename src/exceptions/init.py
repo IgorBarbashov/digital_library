@@ -9,6 +9,7 @@ from src.exceptions.auth import (
 )
 from src.exceptions.entity import (
     EntityAlreadyExists,
+    EntityIntegrityException,
     EntityNotFound,
     NoDataToPatchEntity,
 )
