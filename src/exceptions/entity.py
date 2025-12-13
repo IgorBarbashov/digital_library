@@ -17,3 +17,9 @@ class NoDataToPatchEntity(Exception):
     def __init__(self, entity_name: str = "entity"):
         self.message = f"No data to update {entity_name.capitalize()}"
         super().__init__(self.message)
+
+
+class EntityIntegrityException(Exception):
+    def __init__(self, detail: str):
+        self.detail = detail
+        super().__init__(detail)

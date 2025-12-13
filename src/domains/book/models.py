@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
 
+from src.domains.category.models import Category
 from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
@@ -37,13 +38,14 @@ class Book(Base, BaseModelMixin):
         back_populates="book",
         cascade="all, delete-orphan",
         overlaps="authors",
+        lazy="selectin",
     )
 
     authors: Mapped[list[Author]] = relationship(
         "Author",
         secondary="author_book",
         back_populates="books",
-        lazy="select",
+        lazy="selectin",
         overlaps="author_books",
     )
     favorites: Mapped[list[Favorites]] = relationship(
