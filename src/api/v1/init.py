@@ -6,6 +6,7 @@ from src.domains.book.api import router as book_router
 from src.domains.category.api import router as category_router
 from src.domains.favorites.api import router as favorites_router
 from src.domains.genre.api import router as genre_router
+from src.domains.reading_status.api import router as reading_status_router
 from src.domains.review.api import router as review_router
 from src.domains.user.api import router as user_router
 from src.setting import settings
@@ -19,6 +20,7 @@ routers = {
     "user": ["/user", user_router],
     "book": ["/book", book_router],
     "auth": [settings.auth_prefix, auth_router],
+    "me": ["/me", reading_status_router],
 }
 
 
