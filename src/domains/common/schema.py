@@ -1,4 +1,8 @@
+from typing import Any
+
 from pydantic import BaseModel, model_validator
+
+from src.constants.order_direction import OrderDirection
 from src.exceptions.entity import NoDataToPatchEntity
 
 
@@ -12,3 +16,8 @@ class BasePatchSchema(BaseSchema):
         if not values or all(v is None for v in values.values()):
             raise NoDataToPatchEntity()
         return values
+
+
+class OrderBaseSchema(BaseSchema):
+    order_by: Any
+    order_direction: OrderDirection = OrderDirection.asc
