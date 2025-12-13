@@ -17,23 +17,23 @@ async def create_book(session: AsyncSession, book: BookCreateSchema) -> BookRead
         genre_id=book.genre_id,
     )
 
-    session.add(new_book)
-    if book.authors:
-        authors_result = await session.execute(select(Author).where(Author.id.in_(book.authors)))
-        authors = authors_result.scalars().all()
-
-        if len(authors) != len(book.authors):
-            raise EntityNotFound({"authors": book.authors}, "auhtors")
-
-        await session.flush()
-        rows = [{"author_id": a.id, "book_id": new_book.id} for a in authors]
-        await session.execute(insert(AuthorBook), rows)
-
     try:
-        await session.commit()
+        session.add(new_book)
+        if book.authors:
+            authors_result = await session.execute(select(Author).where(Author.id.in_(book.authors)))
+            authors = authors_result.scalars().all()
+
+            if len(authors) != len(book.authors):
+                raise EntityNotFound({"authors": book.authors}, "auhtors")
+
+            await session.flush()
+            rows = [{"author_id": a.id, "book_id": new_book.id} for a in authors]
+            await session.execute(insert(AuthorBook), rows)
+
+            await session.commit()
     except IntegrityError as err:
         await session.rollback()
-        raise EntityIntegrityException(str(err)) from None
+        raise EntityIntegrityException(str(err._message())) from None
 
     return BookReadSchema.model_validate(new_book)
 

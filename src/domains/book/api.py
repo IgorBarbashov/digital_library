@@ -1,7 +1,7 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.db import get_async_session
@@ -11,7 +11,10 @@ from src.domains.book.schema import BookCreateSchema, BookFilters, BookReadSchem
 router = APIRouter()
 
 
-@router.post("/")
+@router.post(
+    "/",
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_book_handler(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     book: BookCreateSchema,
@@ -30,12 +33,15 @@ async def get_book_handler(
 @router.get("/")
 async def books_list_handler(
     session: Annotated[AsyncSession, Depends(get_async_session)],
-     filters: Annotated[BookFilters, Depends()],
+    filters: Annotated[BookFilters, Depends()],
 ) -> list[BookReadSchema]:
     return await get_books_list(session, filters)
 
 
-@router.delete("/{id}")
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 async def delete_book_handler(
     session: Annotated[AsyncSession, Depends(get_async_session)],
     id: uuid.UUID,
