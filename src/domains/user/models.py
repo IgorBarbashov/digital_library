@@ -9,8 +9,8 @@ from src.domains.common.models import Base, BaseModelMixin
 
 if TYPE_CHECKING:
     from src.domains.favorites.models import Favorites
-    from src.domains.role.models import Role
     from src.domains.review.models import Review
+    from src.domains.role.models import Role
 
 
 class User(Base, BaseModelMixin):
@@ -37,7 +37,5 @@ class User(Base, BaseModelMixin):
         "Favorites", back_populates="user", cascade="all, delete-orphan"
     )
     reviews: Mapped[list["Review"]] = relationship(
-        "Review",
-        back_populates="user",
-        cascade="all, delete-orphan",
+        "Review", back_populates="user", cascade="all, delete-orphan"
     )

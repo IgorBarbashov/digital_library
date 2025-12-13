@@ -1,4 +1,5 @@
 from pydantic import BaseModel, model_validator
+
 from src.exceptions.entity import NoDataToPatchEntity
 
 

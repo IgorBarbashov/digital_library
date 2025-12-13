@@ -3,6 +3,7 @@ from datetime import date
 from typing import Self
 
 from pydantic import ConfigDict
+
 from src.domains.author.models import Author
 from src.domains.common.schema import BasePatchSchema, BaseSchema
 

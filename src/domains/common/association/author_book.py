@@ -5,7 +5,6 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.domains.book.models import Book
 from src.domains.common.models import Base, CreatedUpdatedColumnsMixin
 
 if TYPE_CHECKING:
@@ -33,5 +32,9 @@ class AuthorBook(Base, CreatedUpdatedColumnsMixin):
         primary_key=True,
     )
 
-    author: Mapped[Author] = relationship("Author", back_populates="author_books", overlaps="authors,books")
-    book: Mapped[Book] = relationship("Book", back_populates="author_books", overlaps="authors,books")
+    author: Mapped["Author"] = relationship(
+        "Author", back_populates="author_books", overlaps="authors,books"
+    )
+    book: Mapped["Book"] = relationship(
+        "Book", back_populates="author_books", overlaps="authors,books"
+    )

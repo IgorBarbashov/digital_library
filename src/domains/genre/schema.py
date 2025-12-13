@@ -1,6 +1,7 @@
 import uuid
 
 from pydantic import ConfigDict
+
 from src.domains.common.schema import BasePatchSchema, BaseSchema
 
 
