@@ -6,8 +6,10 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.auth.guards import get_current_active_admin
 from src.db.db import get_async_session
 from src.domains.category.models import Category
+from src.domains.user.schema import UserReadSchema
 from src.domains.category.schema import (
     CategoryCreateSchema,
     CategoryPatchSchema,
@@ -56,6 +58,7 @@ async def get_by_id(
 async def create(
     category_in: CategoryCreateSchema,
     session: Annotated[AsyncSession, Depends(get_async_session)],
+    current_admin: Annotated[UserReadSchema, Depends(get_current_active_admin)],
 ) -> CategoryReadSchema:
     category = Category(**category_in.model_dump())
 
@@ -69,8 +72,6 @@ async def create(
             {"name": category_in.name}, entity_name="category"
         ) from None
 
-    await session.refresh(category)
-
     return CategoryReadSchema.model_validate(category)
 
 
@@ -82,6 +83,7 @@ async def patch(
     category_id: Annotated[uuid.UUID, Path(..., description="ID категории")],
     category_in: CategoryPatchSchema,
     session: Annotated[AsyncSession, Depends(get_async_session)],
+    current_admin: Annotated[UserReadSchema, Depends(get_current_active_admin)],
 ) -> CategoryReadSchema:
     category = await session.get(Category, category_id)
 
@@ -116,6 +118,7 @@ async def patch(
 async def delete_by_id(
     category_id: Annotated[uuid.UUID, Path(..., description="ID категории")],
     session: Annotated[AsyncSession, Depends(get_async_session)],
+    current_admin: Annotated[UserReadSchema, Depends(get_current_active_admin)],
 ) -> None:
     category = await session.get(Category, category_id)
 

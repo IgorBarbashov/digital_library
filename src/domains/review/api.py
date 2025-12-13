@@ -100,7 +100,6 @@ async def patch(
     if review is None:
         raise EntityNotFound({"id": review_id}, entity_name="review")
 
-    # Check if current user is the author of the review
     if review.user_id != current_user.id:
         raise HTTPException(
             status_code=403, detail="You can only update your own reviews"
@@ -134,7 +133,6 @@ async def delete_by_id(
     if review is None:
         raise EntityNotFound({"id": review_id}, entity_name="review")
 
-    # Check if current user is the author of the review
     if review.user_id != current_user.id:
         raise HTTPException(
             status_code=403, detail="You can only delete your own reviews"

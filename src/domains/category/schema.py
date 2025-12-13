@@ -1,11 +1,12 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field
+
+from src.domains.common.schema import BaseSchema
 
 
-class CategoryBaseSchema(BaseModel):
-    """Base category schema."""
+class CategoryBaseSchema(BaseSchema):
 
     name: str = Field(
         ..., min_length=1, max_length=100, description="Название категории"
@@ -13,13 +14,11 @@ class CategoryBaseSchema(BaseModel):
 
 
 class CategoryCreateSchema(CategoryBaseSchema):
-    """Schema for creating a category."""
 
     pass
 
 
-class CategoryPatchSchema(BaseModel):
-    """Schema for updating a category."""
+class CategoryPatchSchema(BaseSchema):
 
     name: str | None = Field(
         None, min_length=1, max_length=100, description="Название категории"
@@ -27,7 +26,6 @@ class CategoryPatchSchema(BaseModel):
 
 
 class CategoryReadSchema(CategoryBaseSchema):
-    """Schema for reading a category."""
 
     id: uuid.UUID
     create_at: datetime
