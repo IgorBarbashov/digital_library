@@ -60,7 +60,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 @pytest.fixture(scope="function")
 async def existing_test_admin(
     client: AsyncClient, db_session, test_admin: dict[str, str] = TEST_ADMIN
-) -> User:
+) -> dict[str, Any]:
     result = await db_session.execute(
         select(User).where(User.username == TEST_ADMIN["username"])
     )
@@ -72,13 +72,13 @@ async def existing_test_admin(
             "/api/v1/user/", headers=user_headers, json=test_admin
         )
         return user_response.json()
-    return user
+    return {"id": str(user.id), "username": user.username, "email": user.email}
 
 
 @pytest.fixture
 async def admin_token(
     client: AsyncClient,
-    existing_test_admin: User,
+    existing_test_admin: dict[str, Any],
     test_admin: dict[str, str] = TEST_ADMIN,
 ) -> dict[str, Any]:
     creds_headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -89,7 +89,7 @@ async def admin_token(
     creds_response = await client.post(
         "/api/v1/auth/login", headers=creds_headers, data=creds_payload
     )
-    TEST_TOKEN["admin_id"] = existing_test_admin.id
+    TEST_TOKEN["admin_id"] = existing_test_admin["id"]
     TEST_TOKEN["token"] = creds_response.json()
     return TEST_TOKEN
 
@@ -146,8 +146,13 @@ async def test_create_category_without_auth(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_category_with_empty_name(client: AsyncClient):
-    headers = {"Content-Type": "application/json"}
+async def test_create_category_with_empty_name(
+    client: AsyncClient, admin_token: dict[str, Any]
+):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {admin_token['token']['access_token']}",
+    }
     category_payload = {"name": ""}
 
     response = await client.post(
@@ -158,8 +163,13 @@ async def test_create_category_with_empty_name(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_category_with_long_name(client: AsyncClient):
-    headers = {"Content-Type": "application/json"}
+async def test_create_category_with_long_name(
+    client: AsyncClient, admin_token: dict[str, Any]
+):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {admin_token['token']['access_token']}",
+    }
     category_payload = {"name": "a" * 101}
 
     response = await client.post(
@@ -170,8 +180,13 @@ async def test_create_category_with_long_name(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_category_without_name(client: AsyncClient):
-    headers = {"Content-Type": "application/json"}
+async def test_create_category_without_name(
+    client: AsyncClient, admin_token: dict[str, Any]
+):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {admin_token['token']['access_token']}",
+    }
     category_payload = {}
 
     response = await client.post(
@@ -195,9 +210,14 @@ async def test_patch_category_without_auth(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_patch_category_with_empty_name(client: AsyncClient):
+async def test_patch_category_with_empty_name(
+    client: AsyncClient, admin_token: dict[str, Any]
+):
     category_id = "00000000-0000-0000-0000-000000000000"
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {admin_token['token']['access_token']}",
+    }
     patch_payload = {"name": ""}
 
     response = await client.patch(

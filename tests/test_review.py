@@ -50,7 +50,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 @pytest.fixture(scope="function")
 async def existing_test_user(
     client: AsyncClient, db_session, test_user: dict[str, str] = TEST_USER
-) -> User:
+) -> dict[str, Any]:
     result = await db_session.execute(
         select(User).where(User.username == TEST_USER["username"])
     )
@@ -62,12 +62,12 @@ async def existing_test_user(
             "/api/v1/user/", headers=user_headers, json=test_user
         )
         return user_response.json()
-    return user
+    return {"id": str(user.id), "username": user.username, "email": user.email}
 
 
 @pytest.fixture
 async def user_token(
-    client: AsyncClient, existing_test_user: User, test_user: dict[str, str] = TEST_USER
+    client: AsyncClient, existing_test_user: dict[str, Any], test_user: dict[str, str] = TEST_USER
 ) -> dict[str, Any]:
     creds_headers = {"Content-Type": "application/x-www-form-urlencoded"}
     creds_payload = {
@@ -77,7 +77,7 @@ async def user_token(
     creds_response = await client.post(
         "/api/v1/auth/login", headers=creds_headers, data=creds_payload
     )
-    TEST_TOKEN["user_id"] = existing_test_user.id
+    TEST_TOKEN["user_id"] = existing_test_user["id"]
     TEST_TOKEN["token"] = creds_response.json()
     return TEST_TOKEN
 
@@ -131,8 +131,13 @@ async def test_create_review_without_auth(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_review_with_invalid_rating_low(client: AsyncClient):
-    headers = {"Content-Type": "application/json"}
+async def test_create_review_with_invalid_rating_low(
+    client: AsyncClient, user_token: dict[str, Any]
+):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {user_token['token']['access_token']}",
+    }
     review_payload = {
         "book_id": "00000000-0000-0000-0000-000000000000",
         "rating": 0,
@@ -147,8 +152,13 @@ async def test_create_review_with_invalid_rating_low(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_review_with_invalid_rating_high(client: AsyncClient):
-    headers = {"Content-Type": "application/json"}
+async def test_create_review_with_invalid_rating_high(
+    client: AsyncClient, user_token: dict[str, Any]
+):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {user_token['token']['access_token']}",
+    }
     review_payload = {
         "book_id": "00000000-0000-0000-0000-000000000000",
         "rating": 6,
@@ -163,8 +173,13 @@ async def test_create_review_with_invalid_rating_high(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_review_without_rating(client: AsyncClient):
-    headers = {"Content-Type": "application/json"}
+async def test_create_review_without_rating(
+    client: AsyncClient, user_token: dict[str, Any]
+):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {user_token['token']['access_token']}",
+    }
     review_payload = {
         "book_id": "00000000-0000-0000-0000-000000000000",
         "text": "Missing rating",
@@ -178,8 +193,13 @@ async def test_create_review_without_rating(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_review_without_book_id(client: AsyncClient):
-    headers = {"Content-Type": "application/json"}
+async def test_create_review_without_book_id(
+    client: AsyncClient, user_token: dict[str, Any]
+):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {user_token['token']['access_token']}",
+    }
     review_payload = {"rating": 5, "text": "Missing book_id"}
 
     response = await client.post(
@@ -203,9 +223,14 @@ async def test_patch_review_without_auth(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_patch_review_with_invalid_rating(client: AsyncClient):
+async def test_patch_review_with_invalid_rating(
+    client: AsyncClient, user_token: dict[str, Any]
+):
     review_id = "00000000-0000-0000-0000-000000000000"
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {user_token['token']['access_token']}",
+    }
     patch_payload = {"rating": 10}
 
     response = await client.patch(
