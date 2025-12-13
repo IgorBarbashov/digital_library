@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.domains.category.models import Category
 from src.domains.common.models import Base, BaseModelMixin
@@ -29,9 +29,7 @@ class Book(Base, BaseModelMixin):
     )
 
     genre: Mapped[Genre] = relationship("Genre", back_populates="books")
-    category: Mapped["Category | None"] = relationship(
-        "Category", back_populates="books"
-    )
+    category: Mapped["Category | None"] = relationship("Category", back_populates="books")
 
     author_books: Mapped[list[AuthorBook]] = relationship(
         "AuthorBook",
@@ -48,9 +46,6 @@ class Book(Base, BaseModelMixin):
         lazy="selectin",
         overlaps="author_books",
     )
-    favorites: Mapped[list[Favorites]] = relationship(
-        "Favorites", back_populates="book", cascade="all, delete-orphan"
-    )
-    reviews: Mapped[list["Review"]] = relationship(
-        "Review", back_populates="book", cascade="all, delete-orphan"
-    )
+    favorites: Mapped[list[Favorites]] = relationship("Favorites", back_populates="book", cascade="all, delete-orphan")
+
+    reviews: Mapped[list["Review"]] = relationship("Review", back_populates="book", cascade="all, delete-orphan")

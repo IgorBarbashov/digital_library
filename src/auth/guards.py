@@ -23,11 +23,9 @@ async def get_current_user(
     session: Annotated[AsyncSession, Depends(get_async_session)],
 ) -> UserReadSchema:
     try:
-        payload = jwt.decode(
-            token, settings.jwt_secret_key, algorithms=settings.jwt_algorithm
-        )
+        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=settings.jwt_algorithm)
     except jwt.InvalidTokenError:
-        raise BadCredentials() from  None
+        raise BadCredentials() from None
 
     username = payload.get("username")
     if username is None:

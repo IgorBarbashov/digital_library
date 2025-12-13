@@ -12,16 +12,20 @@ from src.auth.guards import get_current_active_user
 from src.auth.utils import get_password_hash
 from src.db.db import get_async_session
 from src.domains.role.repository import get_role_orm_by_name
+from src.domains.user.constants import ORDER_COLUMN_MAP
 from src.domains.user.models import User
 from src.domains.user.repository import get_user_orm_by_id
 from src.domains.user.schema import (
     AssignUserRoleSchema,
     UserCreateSchema,
+    UserFiltersSchema,
+    UserOrderSchema,
     UserPatchSchema,
     UserReadSchema,
     UserUpdateSchema,
 )
 from src.exceptions.entity import EntityAlreadyExists, EntityNotFound
+from src.utils.request_builder import apply_ordering
 
 router = APIRouter()
 
@@ -30,8 +34,27 @@ router = APIRouter()
     "/",
     summary="Получить список пользователей",
 )
-async def get_all(session: Annotated[AsyncSession, Depends(get_async_session)]) -> list[UserReadSchema]:
-    stmt = select(User).options(selectinload(User.role)).order_by(User.create_at.asc())
+async def get_all(
+    session: Annotated[AsyncSession, Depends(get_async_session)],
+    filters: Annotated[UserFiltersSchema, Depends()],
+    order: Annotated[UserOrderSchema, Depends()],
+) -> list[UserReadSchema]:
+    stmt = select(User).options(selectinload(User.role))
+    stmt = stmt.limit(filters.limit).offset(filters.offset)
+    stmt = apply_ordering(stmt, order, ORDER_COLUMN_MAP)
+
+    if filters.username:
+        stmt = stmt.where(User.username.ilike(f"%{filters.username}%"))
+
+    if filters.first_name:
+        stmt = stmt.where(User.first_name.ilike(f"%{filters.first_name}%"))
+
+    if filters.last_name:
+        stmt = stmt.where(User.last_name.ilike(f"%{filters.last_name}%"))
+
+    if filters.email:
+        stmt = stmt.where(User.email.ilike(f"%{filters.email}%"))
+
     result = await session.execute(stmt)
     users = result.scalars().all()
 

@@ -7,11 +7,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.db.db import get_async_session
+from src.domains.author.constants import ORDER_COLUMN_MAP
 from src.domains.author.models import Author
 from src.domains.author.repository import get_author_orm_by_id
-from src.domains.author.schema import AuthorCreateSchema, AuthorPatchSchema, AuthorReadSchema
+from src.domains.author.schema import (
+    AuthorCreateSchema,
+    AuthorFiltersSchema,
+    AuthorOrderSchema,
+    AuthorPatchSchema,
+    AuthorReadSchema,
+)
 from src.domains.common.association.author_genre import AuthorGenre
+from src.domains.genre.models import Genre
 from src.exceptions.entity import EntityNotFound
+from src.utils.request_builder import apply_ordering
 
 router = APIRouter()
 
@@ -22,13 +31,27 @@ router = APIRouter()
 )
 async def get_all(
     session: Annotated[AsyncSession, Depends(get_async_session)],
+    filters: Annotated[AuthorFiltersSchema, Depends()],
+    order: Annotated[AuthorOrderSchema, Depends()],
     with_genre: Annotated[bool, Query(..., description="Загружать ли жанры")] = False,
 ) -> list[AuthorReadSchema]:
-    stmt = select(Author).order_by(Author.create_at.asc())
+    stmt = select(Author).limit(filters.limit).offset(filters.offset)
+    stmt = apply_ordering(stmt, order, ORDER_COLUMN_MAP)
+
+    if filters.first_name:
+        stmt = stmt.where(Author.first_name.ilike(f"%{filters.first_name}%"))
+
+    if filters.last_name:
+        stmt = stmt.where(Author.last_name.ilike(f"%{filters.last_name}%"))
+
+    if filters.genre_id:
+        stmt = stmt.join(Author.genres).where(Genre.id == filters.genre_id)
+
     if with_genre:
         stmt = stmt.options(selectinload(Author.genres))
+
     result = await session.execute(stmt)
-    authors = result.scalars().all()
+    authors = result.scalars().unique().all()
 
     return [AuthorReadSchema.from_orm_with_genres(author, with_genre) for author in authors]
 
