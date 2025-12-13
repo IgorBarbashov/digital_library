@@ -33,6 +33,7 @@ pytest-asyncio = "^1.3.0"
 pyright = "^1.1.407"
 ruff = "^0.14.3"
 httpx = "^0.28.1"
+paracelsus = "^0.13.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -73,3 +74,17 @@ select = [
     "FAST",
 ]
 
+[tool.paracelsus]
+base = "src.domains.common.models:Base"
+imports = [
+  "src.domains.author.models",
+  "src.domains.book.models",
+  "src.domains.category.models",
+  "src.domains.favorites.models",
+  "src.domains.genre.models",
+  "src.domains.review.models",
+  "src.domains.role.models",
+  "src.domains.user.models"
+]
+column_sort = "preserve-order"
+omit_comments = false

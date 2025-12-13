@@ -70,6 +70,108 @@ fastapi-project
 |`schema.py`|доменные модели, `pydantic`-схемы объектов `dto` и `response`|
 |`services.py`|бизнес-логика|
 
+## Схема данных
+<!-- BEGIN_SQLALCHEMY_DOCS -->
+```mermaid
+erDiagram
+  book {
+    VARCHAR(255) title
+    UUID genre_id FK
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  author_book {
+    UUID author_id PK,FK
+    UUID book_id PK,FK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  author_genre {
+    UUID author_id PK,FK
+    UUID genre_id PK,FK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  author {
+    VARCHAR(64) first_name
+    VARCHAR(64) last_name
+    DATETIME birth_date "nullable"
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  category {
+    VARCHAR(100) name UK
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  favorites {
+    UUID user_id PK,FK "indexed"
+    UUID book_id PK,FK "indexed"
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  genre {
+    VARCHAR(30) name UK
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  review {
+    VARCHAR user_id FK
+    VARCHAR book_id FK
+    INTEGER rating
+    TEXT text "nullable"
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  role {
+    VARCHAR(30) name UK
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  user {
+    VARCHAR(64) username UK
+    VARCHAR(255) hashed_password
+    VARCHAR(64) first_name
+    VARCHAR(64) last_name
+    VARCHAR(255) email UK
+    BOOLEAN disabled
+    DATETIME password_changed_at "nullable"
+    INTEGER failed_login_attempts
+    UUID role_id FK
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  genre ||--o{ book : genre_id
+  author ||--o| author_book : author_id
+  book ||--o| author_book : book_id
+  author ||--o| author_genre : author_id
+  genre ||--o| author_genre : genre_id
+  user ||--o| favorites : user_id
+  book ||--o| favorites : book_id
+  user ||--o{ review : user_id
+  book ||--o{ review : book_id
+  role ||--o{ user : role_id
+
+```
+<!-- END_SQLALCHEMY_DOCS -->
+
 ### Соглашение об именовании
 
 - названия доменных моделей, `orm`-моделей, таблиц БД, `pydantic`-схем даются в единственном числе
@@ -104,6 +206,10 @@ fastapi-project
 |`alembic revision --autogenerate -m "<Name of the migration>"`|Создает файл миграции, регистрирует миграцию в реестре, а также автоматически генерирует код миграции. **Важно**: в автоматически сгенерированную миграцию войдут только изменения схем БД. Для миграции данных, код необходимо написать вручную|
 |`alembic revision -m "<Name of the migration>"`|Создает файл миграции, регистрирует миграцию в реестре. Код миграции необходимо написать вручную (функции `upgrade`, `downgrade`)|
 |`alembic upgrade head`|Применение миграций|
+
+### Обновление диаграммы данных
+
+paracelsus inject docs/README.md
 
 ### Контроль качества кода
 
