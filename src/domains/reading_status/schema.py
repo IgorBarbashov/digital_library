@@ -9,7 +9,7 @@ from src.domains.common.schema import BaseSchema, OrderBaseSchema
 
 class ReadingStatusBaseSchema(BaseSchema):
     book_id: uuid.UUID = Field(..., description="ID книги")
-    reading_status: BookReadingStatus = Field(..., description="Статус чтения книги")
+    status: BookReadingStatus = Field(..., description="Статус чтения книги")
 
 
 class ReadingStatusCreateSchema(ReadingStatusBaseSchema):
@@ -21,9 +21,13 @@ class ReadingStatusUpdateSchema(ReadingStatusBaseSchema):
 
 
 class ReadingStatusReadSchema(BaseSchema):
-    reading_status: BookReadingStatus = Field(..., description="Статус чтения книги")
+    status: BookReadingStatus = Field(..., description="Статус чтения книги")
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ReadingStatusPathSchema(ReadingStatusCreateSchema):
+    pass
 
 
 class ReadingStatusFiltersSchema(BaseSchema):
