@@ -9,7 +9,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from src.domains.book.models import Book
-from src.domains.favorites.models import Favorites
 from src.domains.genre.models import Genre
 from src.domains.user.models import User
 from src.main import app
