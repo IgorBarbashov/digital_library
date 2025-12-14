@@ -18,6 +18,7 @@ from src.domains.review.models import Review
 from src.setting import settings
 from src.domains.category.models import Category
 from src.domains.review.models import Review
+from src.domains.reading_status.models import ReadingStatus
 
 
 # this is the Alembic Config object, which provides
