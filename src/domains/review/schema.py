@@ -32,3 +32,14 @@ class ReviewReadSchema(ReviewBaseSchema):
     update_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ReviewWithUserSchema(ReviewBaseSchema):
+
+    id: uuid.UUID
+    user_id: uuid.UUID
+    username: str
+    book_id: uuid.UUID
+    created_at: str
+
+    model_config = ConfigDict(from_attributes=True)

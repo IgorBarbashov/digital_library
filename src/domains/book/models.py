@@ -22,6 +22,7 @@ class Book(Base, BaseModelMixin):
     __tablename__ = "book"
 
     title: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str | None] = mapped_column(String, nullable=True)
     genre_id: Mapped[uuid.UUID] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("genre.id"), nullable=False, unique=False
     )
