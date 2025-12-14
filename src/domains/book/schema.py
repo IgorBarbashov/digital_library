@@ -50,3 +50,19 @@ class BookFilters(BaseSchema):
     author_id: uuid.UUID | None = None
     limit: int = 50
     offset: int = 0
+
+
+class BookInformationSchema(BaseSchema):
+    id: uuid.UUID
+    title: str
+    authors: list
+    description: str | None
+    genre_id: uuid.UUID
+    category_id: uuid.UUID | None
+    average_rating: float | None
+    total_ratings: int
+    max_rating_count: int
+    text_reviews_count: int
+    latest_reviews: list
+
+    model_config = ConfigDict(from_attributes=True, arbitrary_types_allowed=True)
