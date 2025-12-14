@@ -1,13 +1,22 @@
 import uuid
 
-from sqlalchemy import delete, insert, select
+from sqlalchemy import delete, func, insert, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from src.domains.author.models import Author
+from src.domains.author.schema import AuthorReadSchema
 from src.domains.book.models import Book
-from src.domains.book.schema import BookCreateSchema, BookFilters, BookReadSchema, BookUpdateSchema
+from src.domains.book.schema import (
+    BookCreateSchema,
+    BookFilters,
+    BookReadSchema,
+    BookUpdateSchema,
+)
 from src.domains.common.association.author_book import AuthorBook
+from src.domains.review.models import Review
+from src.domains.review.schema import ReviewWithUserSchema
 from src.exceptions.entity import EntityIntegrityException, EntityNotFound
 
 
@@ -20,7 +29,9 @@ async def create_book(session: AsyncSession, book: BookCreateSchema) -> BookRead
     try:
         session.add(new_book)
         if book.authors:
-            authors_result = await session.execute(select(Author).where(Author.id.in_(book.authors)))
+            authors_result = await session.execute(
+                select(Author).where(Author.id.in_(book.authors))
+            )
             authors = authors_result.scalars().all()
 
             if len(authors) != len(book.authors):
@@ -92,7 +103,9 @@ async def update_book(
         book.genre_id = data.genre_id
 
     if data.authors is not None:
-        authors_result = await session.execute(select(Author).where(Author.id.in_(data.authors)))
+        authors_result = await session.execute(
+            select(Author).where(Author.id.in_(data.authors))
+        )
         authors = authors_result.scalars().all()
 
         if len(authors) != len(data.authors):
@@ -117,7 +130,9 @@ async def delete_book(
     session: AsyncSession,
     id: uuid.UUID,
 ):
-    stmt = delete(Book).where(Book.id == id).returning(Book.id, Book.title, Book.genre_id)
+    stmt = (
+        delete(Book).where(Book.id == id).returning(Book.id, Book.title, Book.genre_id)
+    )
 
     result = await session.execute(stmt)
 
@@ -127,11 +142,6 @@ async def delete_book(
 
 
 async def get_book_information(session: AsyncSession, id: uuid.UUID):
-    from sqlalchemy import func
-    from sqlalchemy.orm import joinedload
-    from src.domains.review.models import Review
-    from src.domains.review.schema import ReviewWithUserSchema
-
     book_stmt = select(Book).where(Book.id == id)
     book_result = await session.execute(book_stmt)
     book = book_result.scalar_one_or_none()
@@ -139,15 +149,21 @@ async def get_book_information(session: AsyncSession, id: uuid.UUID):
     if not book:
         raise EntityNotFound({"id": id}, "book")
 
-    rating_stmt = select(func.avg(Review.rating), func.count(Review.id)).where(Review.book_id == id)
+    rating_stmt = select(func.avg(Review.rating), func.count(Review.id)).where(
+        Review.book_id == id
+    )
     rating_result = await session.execute(rating_stmt)
     avg_rating, total_ratings = rating_result.one()
 
-    max_rating_stmt = select(func.count(Review.id)).where(Review.book_id == id, Review.rating == 5)
+    max_rating_stmt = select(func.count(Review.id)).where(
+        Review.book_id == id, Review.rating == 5
+    )
     max_rating_result = await session.execute(max_rating_stmt)
     max_rating_count = max_rating_result.scalar()
 
-    text_reviews_stmt = select(func.count(Review.id)).where(Review.book_id == id, Review.text.isnot(None), Review.text != "")
+    text_reviews_stmt = select(func.count(Review.id)).where(
+        Review.book_id == id, Review.text.isnot(None), Review.text != ""
+    )
     text_reviews_result = await session.execute(text_reviews_stmt)
     text_reviews_count = text_reviews_result.scalar()
 
@@ -173,8 +189,6 @@ async def get_book_information(session: AsyncSession, id: uuid.UUID):
         )
         for r in reviews
     ]
-
-    from src.domains.author.schema import AuthorReadSchema
 
     authors_data = [
         AuthorReadSchema(
