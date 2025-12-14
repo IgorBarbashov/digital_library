@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from src.domains.common.models import Base, CreatedUpdatedColumnsMixin
 
 if TYPE_CHECKING:
@@ -27,5 +28,5 @@ class AuthorGenre(Base, CreatedUpdatedColumnsMixin):
         primary_key=True,
     )
 
-    author: Mapped[Author] = relationship("Author", back_populates="author_genres")
-    genre: Mapped[Genre] = relationship("Genre", back_populates="author_genres")
+    author: Mapped["Author"] = relationship("Author", back_populates="author_genres")
+    genre: Mapped["Genre"] = relationship("Genre", back_populates="author_genres")

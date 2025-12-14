@@ -3,8 +3,11 @@ from datetime import date
 from typing import Self
 
 from pydantic import ConfigDict
+
+from src.constants.pagination import DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_OFFSET
+from src.domains.author.constants import AuthorOrderBy
 from src.domains.author.models import Author
-from src.domains.common.schema import BasePatchSchema, BaseSchema
+from src.domains.common.schema import BasePatchSchema, BaseSchema, OrderBaseSchema
 
 
 class AuthorBaseSchema(BaseSchema):
@@ -36,3 +39,15 @@ class AuthorReadSchema(AuthorBaseSchema):
         author_data = {**obj.__dict__, "genres": genre_ids}
 
         return cls.model_validate(author_data)
+
+
+class AuthorFiltersSchema(BaseSchema):
+    first_name: str | None = None
+    last_name: str | None = None
+    genre_id: uuid.UUID | None = None
+    limit: int = DEFAULT_PAGINATION_LIMIT
+    offset: int = DEFAULT_PAGINATION_OFFSET
+
+
+class AuthorOrderSchema(OrderBaseSchema):
+    order_by: AuthorOrderBy = AuthorOrderBy.create_at

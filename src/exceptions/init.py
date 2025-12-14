@@ -1,5 +1,6 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
+
 from src.exceptions.auth import (
     AdminRoleRequired,
     BadCredentials,
@@ -8,6 +9,7 @@ from src.exceptions.auth import (
 )
 from src.exceptions.entity import (
     EntityAlreadyExists,
+    EntityIntegrityException,
     EntityNotFound,
     NoDataToPatchEntity,
 )
@@ -56,4 +58,14 @@ def init_exception_handlers(app: FastAPI):
         return JSONResponse(
             status_code=status.HTTP_403_FORBIDDEN,
             content={"message": exc.message},
+        )
+
+    @app.exception_handler(EntityIntegrityException)
+    async def db_integrity_handler(request: Request, exc: EntityIntegrityException):
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "Entity integrity error",
+                "detail": exc.detail,
+            },
         )
