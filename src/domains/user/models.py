@@ -6,6 +6,7 @@ from sqlalchemy import UUID, Boolean, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.domains.common.models import Base, BaseModelMixin
+from src.domains.reading_status.models import ReadingStatus
 
 if TYPE_CHECKING:
     from src.domains.favorites.models import Favorites
@@ -28,6 +29,8 @@ class User(Base, BaseModelMixin):
     role: Mapped[Role] = relationship("Role", back_populates="users")
 
     favorites: Mapped[list[Favorites]] = relationship("Favorites", back_populates="user", cascade="all, delete-orphan")
-    reviews: Mapped[list["Review"]] = relationship(
-        "Review", back_populates="user", cascade="all, delete-orphan"
+    reviews: Mapped[list["Review"]] = relationship("Review", back_populates="user", cascade="all, delete-orphan")
+
+    reading_books: Mapped[list["ReadingStatus"]] = relationship(
+        "ReadingStatus", back_populates="users", cascade="all, delete-orphan"
     )

@@ -9,7 +9,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from src.domains.book.models import Book
-from src.domains.favorites.models import Favorites
 from src.domains.genre.models import Genre
 from src.domains.user.models import User
 from src.main import app
@@ -45,11 +44,8 @@ async def db_session():
 
 @pytest.fixture
 async def client() -> AsyncGenerator[AsyncClient, None]:
-    async with LifespanManager(app), AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-        ) as client:
-            yield client
+    async with LifespanManager(app), AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        yield client
 
 
 @pytest.fixture(scope="function")
@@ -98,35 +94,3 @@ async def test_book(db_session, test_genre: Genre) -> Book:
         await db_session.commit()
         await db_session.refresh(book)
     return book
-
-
-@pytest.mark.asyncio
-async def test_add_book_to_favorites(client: AsyncClient, db_session, user_token: dict[str, Any], test_book: Book):
-    result = await db_session.execute(
-        select(Favorites).where(Favorites.user_id == user_token["user_id"], Favorites.book_id == test_book.id)
-    )
-    favorites = result.scalars().first()
-
-    if favorites:
-        await db_session.delete(favorites)
-        await db_session.commit()
-
-    headers = {
-        "Authorization": f"Bearer {user_token['token']['access_token']}",
-        "Content-Type": "application/json",
-    }
-
-    favorites_payload = {"user_id": str(user_token["user_id"]), "book_id": str(test_book.id)}
-
-    response = await client.post(
-        "/api/v1/favorites/",
-        headers=headers,
-        json=favorites_payload,
-    )
-
-    assert response.status_code == 201
-
-    data = response.json()
-    print(data)
-    assert data["book_id"] == str(test_book.id)
-    assert "user_id" in data

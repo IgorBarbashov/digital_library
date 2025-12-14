@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.domains.category.models import Category
 from src.domains.common.models import Base, BaseModelMixin
+from src.domains.reading_status.models import ReadingStatus
 
 if TYPE_CHECKING:
     from src.domains.author.models import Author
@@ -49,3 +50,7 @@ class Book(Base, BaseModelMixin):
     favorites: Mapped[list[Favorites]] = relationship("Favorites", back_populates="book", cascade="all, delete-orphan")
 
     reviews: Mapped[list["Review"]] = relationship("Review", back_populates="book", cascade="all, delete-orphan")
+
+    reading_users: Mapped[list["ReadingStatus"]] = relationship(
+        "ReadingStatus", back_populates="books", cascade="all, delete-orphan"
+    )

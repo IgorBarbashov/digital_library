@@ -1,7 +1,10 @@
 import uuid
+from typing import Self
 
 from pydantic import ConfigDict
 
+from src.constants.reading_status import BookReadingStatus
+from src.domains.book.models import Book
 from src.domains.common.schema import BaseSchema
 
 
@@ -27,6 +30,18 @@ class BookReadSchema(BookBaseSchema):
     id: uuid.UUID
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class BookWithReadingStatusReadSchema(BookReadSchema):
+    status: BookReadingStatus
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @classmethod
+    def from_orm_with_status(cls, book: Book, status: BookReadingStatus) -> Self:
+        base = BookReadSchema.model_validate(book).model_dump()
+        data = {**base, "status": status}
+        return cls.model_validate(data)
 
 
 class BookFilters(BaseSchema):
