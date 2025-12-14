@@ -74,14 +74,6 @@ fastapi-project
 <!-- BEGIN_SQLALCHEMY_DOCS -->
 ```mermaid
 erDiagram
-  book {
-    VARCHAR(255) title
-    UUID genre_id FK
-    UUID id PK
-    DATETIME create_at
-    DATETIME update_at
-  }
-
   author_book {
     UUID author_id PK,FK
     UUID book_id PK,FK
@@ -112,6 +104,25 @@ erDiagram
     DATETIME update_at
   }
 
+  reading_status {
+    UUID user_id FK
+    UUID book_id FK
+    INTEGER status "nullable"
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
+  book {
+    VARCHAR(255) title
+    VARCHAR description "nullable"
+    UUID genre_id FK
+    UUID category_id FK "nullable"
+    UUID id PK
+    DATETIME create_at
+    DATETIME update_at
+  }
+
   favorites {
     UUID user_id PK,FK "indexed"
     UUID book_id PK,FK "indexed"
@@ -127,8 +138,8 @@ erDiagram
   }
 
   review {
-    VARCHAR user_id FK
-    VARCHAR book_id FK
+    UUID user_id FK
+    UUID book_id FK
     INTEGER rating
     TEXT text "nullable"
     UUID id PK
@@ -158,11 +169,14 @@ erDiagram
     DATETIME update_at
   }
 
-  genre ||--o{ book : genre_id
   author ||--o| author_book : author_id
   book ||--o| author_book : book_id
   author ||--o| author_genre : author_id
   genre ||--o| author_genre : genre_id
+  user ||--o{ reading_status : user_id
+  book ||--o{ reading_status : book_id
+  genre ||--o{ book : genre_id
+  category ||--o{ book : category_id
   user ||--o| favorites : user_id
   book ||--o| favorites : book_id
   user ||--o{ review : user_id
