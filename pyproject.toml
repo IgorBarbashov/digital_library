@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "MIPT project"
 authors = [
   "Kalugin Egor <kalugin.ei@phystech.edu>",
-  "Konovalov Denis <where.adm@gmail.com>",
   "Barbashov Igor <barbashov.is@phystech.edu>",
   "Lukianova ALina <alinaselkova@gmail.com>",
   "Eremenko Denis <eremenko.ds@phystech.edu>"
