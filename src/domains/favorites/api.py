@@ -37,7 +37,8 @@ async def add_to_favorites(
 
     try:
         favorite = await create_favorite(session, schema.user_id, schema.book_id)
-        return FavoriteReadSchema.model_validate(favorite)
+        # return FavoriteReadSchema.model_validate(favorite)
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Книга уже в избранном")
     except IntegrityError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Книга уже в избранном") from e
 
