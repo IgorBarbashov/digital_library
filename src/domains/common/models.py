@@ -12,8 +12,8 @@ class Base(DeclarativeBase):
 
 @declarative_mixin
 class CreatedUpdatedColumnsMixin:
-    create_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
-    update_at: Mapped[DateTime] = mapped_column(
+    create_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    update_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
         default=datetime.utcnow,
