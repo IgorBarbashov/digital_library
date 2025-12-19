@@ -1,6 +1,6 @@
 from typing import Any
 
-import pytest
+import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +19,7 @@ TEST_USER = {
 }
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def existing_test_user(
     client: AsyncClient, db_session: AsyncSession, test_user: dict[str, str] = TEST_USER
 ) -> User:
@@ -38,7 +38,7 @@ async def existing_test_user(
     return user
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def user_token(
     client: AsyncClient, existing_test_user: User, test_user: dict[str, str] = TEST_USER
 ) -> dict[str, Any]:

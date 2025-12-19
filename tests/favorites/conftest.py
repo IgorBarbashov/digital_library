@@ -1,4 +1,4 @@
-import pytest
+import pytest_asyncio
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +9,7 @@ TEST_GENRE_NAME = "Test Genre"
 TEST_BOOK_TITLE = "Test Book"
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def test_genre(db_session: AsyncSession) -> Genre:
     result = await db_session.execute(select(Genre).where(Genre.name == TEST_GENRE_NAME))
     genre = result.scalars().first()
@@ -22,7 +22,7 @@ async def test_genre(db_session: AsyncSession) -> Genre:
     return genre
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def test_book(db_session: AsyncSession, test_genre: Genre) -> Book:
     result = await db_session.execute(select(Book).where(Book.title == TEST_BOOK_TITLE))
     book = result.scalars().first()
