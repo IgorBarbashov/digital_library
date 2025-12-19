@@ -24,6 +24,7 @@ python-multipart = "^0.0.20"
 pyjwt = "^2.10.1"
 pwdlib = {extras = ["argon2"], version = "^0.3.0"}
 asgi-lifespan = "^2.1.0"
+aiosqlite = "^0.22.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
