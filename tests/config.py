@@ -1,3 +1,6 @@
 USER_API_BASE_URL = "/api/v1/user/"
 AUTH_API_BASE_URL = "/api/v1/auth/"
 FAVORIYES_API_BASE_URL = "/api/v1/favorites/"
+GENRE_API_BASE_URL = "/api/v1/genre/"
+CATEGORY_API_BASE_URL = "/api/v1/category/"
+REVIEW_API_BASE_URL = "/api/v1/review/"
