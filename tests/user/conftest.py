@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.domains.user.models import User
+from src.exceptions.auth import AdminRoleRequired, InactiveUser
 from tests.config import AUTH_API_BASE_URL, USER_API_BASE_URL
 
 TEST_USER = {
@@ -16,6 +17,16 @@ TEST_USER = {
     "disabled": "false",
     "password": "StrongPass123!",
     "role": "user",
+}
+
+TEST_ADMIN = {
+    "username": "testadmin123",
+    "first_name": "Test",
+    "last_name": "Admin",
+    "email": "testadmin123@example.com",
+    "disabled": "false",
+    "password": "AdminPass123!",
+    "role": "admin",
 }
 
 
@@ -51,5 +62,46 @@ async def user_token(
 
     return {
         "user_id": existing_test_user.id,
+        "token": token,
+    }
+
+
+@pytest_asyncio.fixture(scope="function")
+async def existing_active_test_admin(
+    client: AsyncClient, db_session: AsyncSession, test_admin: dict[str, str] = TEST_ADMIN
+) -> User:
+    if str(test_admin.get("disabled", "false")).lower() == "true":
+        raise InactiveUser()
+    if test_admin.get("role") != "admin":
+        raise AdminRoleRequired()
+
+    admin_result = await db_session.execute(select(User).where(User.username == test_admin["username"]))
+    admin = admin_result.scalars().first()
+
+    if admin is None:
+        admin_headers = {"Content-Type": "application/json"}
+        admin_response = await client.post(USER_API_BASE_URL, headers=admin_headers, json=test_admin)
+        assert admin_response.status_code == 201
+
+        admin_result = await db_session.execute(select(User).where(User.username == test_admin["username"]))
+        admin = admin_result.scalars().first()
+        assert admin is not None, "Admin created via API but not found in DB"
+
+    return admin
+
+
+@pytest_asyncio.fixture
+async def admin_token(
+    client: AsyncClient, existing_active_test_admin: User, test_admin: dict[str, str] = TEST_ADMIN
+) -> dict[str, Any]:
+    creds_headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    creds_payload = {"username": test_admin["username"], "password": test_admin["password"]}
+    creds_response = await client.post(f"{AUTH_API_BASE_URL}login", headers=creds_headers, data=creds_payload)
+    assert creds_response.status_code == 200
+
+    token = creds_response.json()
+
+    return {
+        "user_id": existing_active_test_admin.id,
         "token": token,
     }

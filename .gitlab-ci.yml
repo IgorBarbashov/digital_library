@@ -89,6 +89,7 @@ pytest:
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
   artifacts:
     when: always
+    expire_in: 1 week
     reports:
       junit: ${PYTEST_JUNIT_PATH}
       coverage_report:
@@ -98,7 +99,6 @@ pytest:
       - ${PYTEST_JUNIT_PATH}
       - ${PYTEST_COVERAGE_XML}
       - .pytest_cache/
-    expire_in: 1 week
 
 deploy:
   stage: deploy

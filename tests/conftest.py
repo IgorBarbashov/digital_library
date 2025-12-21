@@ -9,7 +9,7 @@ from src.db.db import get_async_session
 from src.domains.common.models import Base
 from src.main import app
 from tests.role.conftest import seed_roles  # noqa: F401
-from tests.user.conftest import existing_test_user, user_token  # noqa: F401
+from tests.user.conftest import admin_token, existing_active_test_admin, existing_test_user, user_token  # noqa: F401
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
