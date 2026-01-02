@@ -33,7 +33,3 @@ build/
 
 # Tests
 .pytest_cache/
-
-# Custom
-_dev_docs/
-**/*instructions.md
