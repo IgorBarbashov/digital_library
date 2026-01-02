@@ -142,9 +142,11 @@ async def delete_book(
 
 
 async def get_book_information(session: AsyncSession, id: uuid.UUID):
-    book_stmt = select(Book).where(Book.id == id)
+    book_stmt = select(Book).where(Book.id == id).options(
+        joinedload(Book.authors).joinedload(Author.genres)
+    )
     book_result = await session.execute(book_stmt)
-    book = book_result.scalar_one_or_none()
+    book = book_result.unique().scalar_one_or_none()
 
     if not book:
         raise EntityNotFound({"id": id}, "book")
